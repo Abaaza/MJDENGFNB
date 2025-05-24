@@ -54,3 +54,4 @@ export async function startEmailListener() {
 
   // Periodic polling
   setInterval(() => handleMessages(connection), CHECK_INTERVAL);
+  }
