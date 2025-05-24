@@ -6,11 +6,24 @@ import path from 'path';
 
 const BASE_DIR = process.env.SHAREFILE_BASE || './sharefile';
 
+function findExistingFolder(projectCode) {
+  if (!fs.existsSync(BASE_DIR)) return null;
+  const entries = fs.readdirSync(BASE_DIR, { withFileTypes: true });
+  const match = entries.find(
+    d => d.isDirectory() && d.name.startsWith(`Tender_${projectCode}_`)
+  );
+  return match ? path.join(BASE_DIR, match.name) : null;
+}
+
+
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
 export function createProjectFolder(projectCode, clientName, projectType, dueDate) {
+    const existing = findExistingFolder(projectCode);
+    if (existing) return existing;
+
   const folderName = `Tender_${projectCode}_${dueDate}`;
   const folderPath = path.join(BASE_DIR, folderName);
   ensureDir(folderPath);
@@ -37,7 +50,7 @@ export function addAddendum(folderPath, fileName, content) {
 }
 
 export function processEmail(msg) {
-    const { projectCode, client, type, due, attachments = [] } = msg;
+  const { projectCode, client, type, due, attachments = [] } = msg;
   const folder = createProjectFolder(projectCode, client, type, due);
   for (const att of attachments) {
     addAddendum(folder, att.filename, att.content);

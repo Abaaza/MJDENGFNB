@@ -2,6 +2,13 @@ import Imap from 'imap-simple';
 import { simpleParser } from 'mailparser';
 import { processEmail } from './inquiryService.js';
 
+function extractProjectCode(subject) {
+  if (!subject) return 'UNKNOWN';
+  const match = subject.match(/(TD-\d+)/i);
+  return match ? match[1].toUpperCase() : subject.trim();
+}
+
+
 const CHECK_INTERVAL = 60 * 1000; // 1 minute
 
 function getConfig() {
@@ -35,7 +42,7 @@ async function handleMessages(connection) {
       }
 
       const msg = {
-        projectCode: parsed.subject || 'UNKNOWN',
+        projectCode: extractProjectCode(parsed.subject),
         client: parsed.from?.value?.[0]?.address || '',
         type: 'Email',
         due: new Date().toISOString().slice(0, 10),
