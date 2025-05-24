@@ -14,4 +14,8 @@ Patch 1 introduces a simple email listener service. The listener connects to an 
 - `INBOX_PORT` – IMAP server port (defaults to 993)
 - `SHAREFILE_BASE` – local path for storing project folders
 
+
 Start the backend with these variables set and the server will automatically poll the inbox every minute.
+
+Incoming emails create a folder named `Tender_[ProjectCode]_[Date]` under `SHAREFILE_BASE` with a `metadata.json` file.
+If a subsequent email is received with the same project code, the service now reuses the existing folder and stores the attachments as addenda while preserving prior versions.

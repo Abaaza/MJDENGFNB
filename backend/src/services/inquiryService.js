@@ -14,13 +14,19 @@ export function createProjectFolder(projectCode, clientName, projectType, dueDat
   const folderName = `Tender_${projectCode}_${dueDate}`;
   const folderPath = path.join(BASE_DIR, folderName);
   ensureDir(folderPath);
-  const meta = {
-    client: clientName,
-    type: projectType,
-    due: dueDate,
-    created: new Date().toISOString(),
-  };
-  fs.writeFileSync(path.join(folderPath, 'metadata.json'), JSON.stringify(meta, null, 2));
+  
+  const metaPath = path.join(folderPath, 'metadata.json');
+  if (!fs.existsSync(metaPath)) {
+    // Only write metadata the first time to avoid clobbering updates
+    const meta = {
+      client: clientName,
+      type: projectType,
+      due: dueDate,
+      created: new Date().toISOString(),
+    };
+    fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2));
+  }
+
   return folderPath;
 }
 
@@ -35,9 +41,22 @@ export function addAddendum(folderPath, fileName, content) {
 // Placeholder for email listener integration
 export function processEmail(msg) {
   // msg should contain { projectCode, client, type, due, attachments: [] }
-  const folder = createProjectFolder(msg.projectCode, msg.client, msg.type, msg.due);
+ 
+  const metaPath = path.join(folderPath, 'metadata.json');
+  if (!fs.existsSync(metaPath)) {
+    // Only write metadata the first time to avoid clobbering updates
+    const meta = {
+      client: clientName,
+      type: projectType,
+      due: dueDate,
+      created: new Date().toISOString(),
+    };
+    fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2));
+  }
+
   for (const att of msg.attachments || []) {
     addAddendum(folder, att.filename, att.content);
   }
+  
   return folder;
 }
