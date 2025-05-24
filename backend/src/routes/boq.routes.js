@@ -33,4 +33,18 @@ router.post('/bluebeam', upload.single('file'), async (req, res) => {
   }
 });
 
+// price a list of BoQ items and calculate profit margin
+router.post('/price', (req, res) => {
+  try {
+    const items = req.body.items || [];
+    const rateFile = process.env.RATE_FILE;
+    if (!rateFile) throw new Error('RATE_FILE not configured');
+    const priced = priceBoq(items, rateFile);
+    res.json(priced);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+
 export default router;

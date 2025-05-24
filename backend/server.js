@@ -7,7 +7,11 @@ app.listen(PORT, () =>
   console.log(`🚀  API running on http://localhost:${PORT}`)
 );
 
-// Kick off the mailbox watcher
-startEmailListener().catch(err =>
-  console.error('Email listener failed to start:', err)
+// Kick off the mailbox watcher unless disabled
+if (!process.env.DISABLE_EMAIL_LISTENER) {
+  startEmailListener().catch(err =>
+    console.error('Email listener failed to start:', err)
   );
+} else {
+  console.log('📭 Email listener disabled');
+}
