@@ -39,6 +39,19 @@ export async function importBluebeam(filePath) {
   throw new Error('Unsupported BlueBeam format');
   }
 
+  export function measurementsToBoq(measurements) {
+  return measurements.map((m, idx) => ({
+    code: `BB${String(idx + 1).padStart(3, '0')}`,
+    description:
+      m.scale
+        ? `${m.description} – ${m.measurement} ${m.unit} @ ${m.scale}`
+        : `${m.description} – ${m.measurement} ${m.unit}`,
+    qty: Number(m.measurement || 0),
+    unit: m.unit || '',
+  }));
+}
+
+
 export function priceBoq(items, rateFile) {
   const script = path.resolve('backend/src/services/pricing_engine.py');
   const proc = spawnSync('python3', [script, rateFile], {

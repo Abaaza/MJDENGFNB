@@ -1,6 +1,6 @@
 // src/routes/boq.routes.js
 import { Router } from 'express';
-import { parseBoqFile, mergeBoq, importBluebeam, priceBoq } from '../services/boqService.js';
+import { parseBoqFile, mergeBoq, importBluebeam, priceBoq, measurementsToBoq } from '../services/boqService.js';
 import multer from 'multer';
 
 const upload = multer({ dest: 'uploads/' });
@@ -28,6 +28,17 @@ router.post('/bluebeam', upload.single('file'), async (req, res) => {
   try {
     const items = await importBluebeam(req.file.path);
     res.json(items);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+// parse BlueBeam export and convert to BoQ line items
+router.post('/bluebeam/boq', upload.single('file'), async (req, res) => {
+  try {
+    const measurements = await importBluebeam(req.file.path);
+    const boqItems = measurementsToBoq(measurements);
+    res.json(boqItems);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
