@@ -11,7 +11,7 @@ export default function ProjectDocuments() {
           ← Back
         </Link>
       </div>
-      <DocumentUploader />
+      <DocumentUploader projectId={id} />
     </div>
   );
 }

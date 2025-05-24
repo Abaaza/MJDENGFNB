@@ -15,6 +15,10 @@ function findExistingFolder(projectCode) {
   return match ? path.join(BASE_DIR, match.name) : null;
 }
 
+export function getProjectFolder(projectCode) {
+  return findExistingFolder(projectCode);
+}
+
 
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });

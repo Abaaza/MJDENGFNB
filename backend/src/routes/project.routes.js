@@ -2,12 +2,15 @@
 import { Router } from 'express';
 import Project from '../models/Project.js';
 import sampleProjects from '../sampleProjects.js';
+import multer from 'multer';
+import fs from 'fs';
+import { getProjectFolder, addAddendum } from '../services/inquiryService.js';
 
+const upload = multer({ storage: multer.memoryStorage() });
 const router = Router();
 
 // Fetch all projects
 router.get('/', async (_req, res) => {
-  // If a DB connection is configured, query it. Otherwise use the in-memory list
   if (process.env.CONNECTION_STRING) {
     const projects = await Project.find().sort({ due: 1 }).exec();
     return res.json(projects);
@@ -77,6 +80,33 @@ router.patch('/:id', async (req, res) => {
   if (idx === -1) return res.status(404).json({ message: 'Not found' });
   sampleProjects[idx] = { ...sampleProjects[idx], ...updates };
   res.json(sampleProjects[idx]);
+});
+
+// -------- document management ---------
+
+router.post('/:id/documents', upload.single('file'), (req, res) => {
+  const folder = getProjectFolder(req.params.id);
+  if (!folder) return res.status(404).json({ message: 'Project folder not found' });
+  if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+  try {
+    addAddendum(folder, req.file.originalname, req.file.buffer);
+    res.status(201).json({ message: 'Uploaded' });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+router.get('/:id/documents', (req, res) => {
+  const folder = getProjectFolder(req.params.id);
+  if (!folder) return res.status(404).json({ message: 'Project folder not found' });
+  try {
+    const files = fs
+      .readdirSync(folder)
+      .filter(f => !['metadata.json', 'current.txt'].includes(f));
+    res.json(files);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
 });
 
 export default router;
