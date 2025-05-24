@@ -13,6 +13,10 @@ provider:
     JWT_REFRESH_SECRET:${env:JWT_REFRESH_SECRET}
     RATE_FILE:         ${env:RATE_FILE}
     DISABLE_EMAIL_LISTENER: ${env:DISABLE_EMAIL_LISTENER}
+    SMTP_HOST:        ${env:SMTP_HOST}
+    SMTP_PORT:        ${env:SMTP_PORT}
+    DISABLE_STATUS_WATCHER: ${env:DISABLE_STATUS_WATCHER}
+
 
 
   httpApi:
