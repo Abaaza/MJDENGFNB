@@ -1,6 +1,6 @@
 // src/routes/boq.routes.js
 import { Router } from 'express';
-import { parseBoqFile, mergeBoq, importBluebeam } from '../services/boqService.js';
+import { parseBoqFile, mergeBoq, importBluebeam, priceBoq } from '../services/boqService.js';
 import multer from 'multer';
 
 const upload = multer({ dest: 'uploads/' });

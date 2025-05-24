@@ -11,6 +11,8 @@ provider:
     EMAIL_USER:        ${env:EMAIL_USER}
     EMAIL_PASS:        ${env:EMAIL_PASS}
     JWT_REFRESH_SECRET:${env:JWT_REFRESH_SECRET}
+    RATE_FILE:         ${env:RATE_FILE}
+
   httpApi:
     cors: true
 

@@ -13,9 +13,13 @@ Patch 1 introduces a simple email listener service. The listener connects to an 
 - `INBOX_HOST` – IMAP server host
 - `INBOX_PORT` – IMAP server port (defaults to 993)
 - `SHAREFILE_BASE` – local path for storing project folders
+- `RATE_FILE` – path to the master rate Excel sheet
+
 
 
 Start the backend with these variables set and the server will automatically poll the inbox every minute.
 
 Incoming emails create a folder named `Tender_[ProjectCode]_[Date]` under `SHAREFILE_BASE` with a `metadata.json` file.
 If a subsequent email is received with the same project code, the service now reuses the existing folder and stores the attachments as addenda while preserving prior versions.
+
+The pricing endpoint relies on Python 3 with the `openpyxl` package installed. Set the `RATE_FILE` environment variable to the location of your master price sheet.

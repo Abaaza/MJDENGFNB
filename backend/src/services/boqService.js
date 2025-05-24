@@ -1,7 +1,8 @@
 // src/services/boqService.js
 // Handles BoQ parsing, merging and pricing
 
-import fs from 'fs';
+import path from 'path';
+import { spawnSync } from 'child_process';
 import * as XLSX from 'xlsx';
 import { parseCSV, parseXML } from './bluebeamParser.js';
 
@@ -36,4 +37,16 @@ export async function importBluebeam(filePath) {
   if (filePath.endsWith('.csv')) return parseCSV(filePath);
   if (filePath.endsWith('.xml')) return parseXML(filePath);
   throw new Error('Unsupported BlueBeam format');
+  }
+
+export function priceBoq(items, rateFile) {
+  const script = path.resolve('backend/src/services/pricing_engine.py');
+  const proc = spawnSync('python3', [script, rateFile], {
+    input: JSON.stringify(items),
+    encoding: 'utf8',
+  });
+  if (proc.status !== 0) {
+    throw new Error(proc.stderr || 'Pricing engine failed');
+  }
+  return JSON.parse(proc.stdout);
 }

@@ -1,0 +1,6 @@
+# Ignore environment files and dependencies
+backend/.env
+backend/node_modules/
+frontend/node_modules/
+**/uploads/
+sharefile/
