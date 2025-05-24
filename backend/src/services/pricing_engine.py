@@ -6,6 +6,8 @@ This module relies on openpyxl; install via `pip install openpyxl`.
 from pathlib import Path
 from openpyxl import load_workbook
 import csv
+import os
+from datetime import datetime
 
 
 def load_rates(path: str) -> dict:
@@ -43,11 +45,28 @@ def load_rates(path: str) -> dict:
 def apply_rates(boq: list, rates: dict) -> list:
     """Populate unit rates, costs and profit margin for BoQ items."""
     priced = []
+    overrides = []
+
     for item in boq:
         data = rates.get(item.get("code"), {})
         rate = data.get("rate")
         cost = data.get("cost")
         unit_rate = item.get("unit_rate") if item.get("unit_rate") is not None else rate
+
+        if (
+            item.get("unit_rate") is not None
+            and rate is not None
+            and float(item["unit_rate"]) != float(rate)
+        ):
+            overrides.append(
+                {
+                    "timestamp": datetime.utcnow().isoformat(),
+                    "code": item.get("code"),
+                    "default_rate": rate,
+                    "override_rate": item.get("unit_rate"),
+                }
+            )
+
         total = None
         profit = None
         margin = None
@@ -58,6 +77,7 @@ def apply_rates(boq: list, rates: dict) -> list:
                 profit = total - float(cost) * qty
                 if total:
                     margin = (profit / total) * 100
+
         priced.append(
             {
                 **item,
@@ -68,7 +88,9 @@ def apply_rates(boq: list, rates: dict) -> list:
                 "margin": margin,
             }
         )
+
     return priced
+
 
 if __name__ == "__main__":
     import json

@@ -51,6 +51,24 @@ export function addAddendum(folderPath, fileName, content) {
   const versionName = `${Date.now()}_${fileName}`;
   fs.writeFileSync(path.join(folderPath, versionName), content);
   fs.writeFileSync(path.join(folderPath, 'current.txt'), fileName);
+
+   const metaPath = path.join(folderPath, 'metadata.json');
+  let meta = { documents: [] };
+  if (fs.existsSync(metaPath)) {
+    try {
+      meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+    } catch {
+      meta = { documents: [] };
+    }
+  }
+  meta.documents = meta.documents || [];
+  meta.documents.push({
+    file: versionName,
+    original: fileName,
+    timestamp: new Date().toISOString(),
+  });
+  meta.current = fileName;
+  fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2));
 }
 
 export function processEmail(msg) {
