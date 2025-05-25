@@ -18,8 +18,12 @@ async function checkStale() {
   for (const p of projects) {
     const updated = new Date(p.updatedAt || p.createdAt || p.due);
     const age = now - updated.getTime();
+        if (!p.boqUploaded) {
+      await sendReminder(p, 'MISSING_BOQ');
+      continue;
+    }
     if (age > STALE_HOURS * 3600_000) {
-      await sendReminder(p);
+      await sendReminder(p, 'STALE');
     }
   }
 }

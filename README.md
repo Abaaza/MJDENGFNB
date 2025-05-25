@@ -41,6 +41,8 @@ MongoDB. Without it, an in-memory sample list is used.
 - `POST /api/projects` – create a new project
 - `GET /api/projects/:id` – fetch one project
 - `PATCH /api/projects/:id` – update status or other fields
+- `POST /api/projects/:id/boq` – upload a BoQ spreadsheet for a project
+
 
 POST /api/boq/bluebeam/boq converts a BlueBeam CSV or XML export into BoQ line items using scale and measurement info.
 If the rate file is a CSV it should contain `code`, `rate` and optional `cost` columns. When a `cost` value is present the `/api/boq/price` endpoint will also return `profit` and `margin` fields for each item.

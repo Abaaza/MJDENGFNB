@@ -4,7 +4,7 @@ import Project from '../models/Project.js';
 import sampleProjects from '../sampleProjects.js';
 import multer from 'multer';
 import fs from 'fs';
-import { getProjectFolder, addAddendum } from '../services/inquiryService.js';
+import { getProjectFolder, addAddendum, addBoqFile } from '../services/inquiryService.js';
 
 const upload = multer({ storage: multer.memoryStorage() });
 const router = Router();
@@ -104,6 +104,25 @@ router.get('/:id/documents', (req, res) => {
       .readdirSync(folder)
       .filter(f => !['metadata.json', 'current.txt'].includes(f));
     res.json(files);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+router.post('/:id/boq', upload.single('file'), async (req, res) => {
+  const { id } = req.params;
+  const folder = getProjectFolder(id);
+  if (!folder) return res.status(404).json({ message: 'Project folder not found' });
+  if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+  try {
+    addBoqFile(folder, req.file.originalname, req.file.buffer);
+    if (process.env.CONNECTION_STRING) {
+      await Project.findOneAndUpdate({ id }, { boqUploaded: true }).exec();
+    } else {
+      const p = sampleProjects.find(p => p.id === id);
+      if (p) p.boqUploaded = true;
+    }
+    res.status(201).json({ message: 'BoQ uploaded' });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

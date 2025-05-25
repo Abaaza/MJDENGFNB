@@ -6,6 +6,8 @@ export default [
     type: "Residential",
     due: "2025-08-05",
     status: "NEW",
+        boqUploaded: false,
+
   },
   {
     id: "TD-002",
@@ -13,6 +15,8 @@ export default [
     type: "Commercial",
     due: "2025-08-08",
     status: "UNDER_REVIEW",
+        boqUploaded: false,
+
   },
   {
     id: "TD-003",
@@ -20,6 +24,8 @@ export default [
     type: "Industrial",
     due: "2025-08-10",
     status: "PRICED",
+        boqUploaded: false,
+
   },
   {
     id: "TD-004",
@@ -27,6 +33,8 @@ export default [
     type: "Mixed-Use",
     due: "2025-08-12",
     status: "SENT",
+        boqUploaded: false,
+
   },
   {
     id: "TD-005",
@@ -34,6 +42,8 @@ export default [
     type: "Residential",
     due: "2025-08-15",
     status: "NEW",
+        boqUploaded: false,
+
   },
   {
     id: "TD-006",
@@ -41,6 +51,8 @@ export default [
     type: "Commercial",
     due: "2025-08-18",
     status: "UNDER_REVIEW",
+        boqUploaded: false,
+
   },
   {
     id: "TD-007",
@@ -48,6 +60,8 @@ export default [
     type: "Industrial",
     due: "2025-08-20",
     status: "PRICED",
+        boqUploaded: false,
+
   },
   {
     id: "TD-008",
@@ -55,6 +69,8 @@ export default [
     type: "Mixed-Use",
     due: "2025-08-22",
     status: "SENT",
+        boqUploaded: false,
+
   },
   {
     id: "TD-009",
@@ -62,6 +78,8 @@ export default [
     type: "Residential",
     due: "2025-08-25",
     status: "NEW",
+        boqUploaded: false,
+
   },
   {
     id: "TD-010",
@@ -69,6 +87,8 @@ export default [
     type: "Commercial",
     due: "2025-08-28",
     status: "UNDER_REVIEW",
+        boqUploaded: false,
+
   },
   {
     id: "TD-011",
@@ -76,6 +96,8 @@ export default [
     type: "Industrial",
     due: "2025-08-30",
     status: "PRICED",
+        boqUploaded: false,
+
   },
   {
     id: "TD-012",
@@ -83,5 +105,7 @@ export default [
     type: "Mixed-Use",
     due: "2025-09-01",
     status: "SENT",
+        boqUploaded: false,
+
   },
 ];

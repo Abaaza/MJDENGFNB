@@ -18,11 +18,16 @@ function createTransporter() {
 
 const transporter = createTransporter();
 
-export async function sendReminder(project) {
+export async function sendReminder(project, reason = 'STALE') {
   if (!transporter) return;
   const to = process.env.NOTIFY_TO || process.env.EMAIL_USER;
-  const subject = `Reminder: ${project.id} still in ${project.status}`;
-  const text = `Project ${project.id} for ${project.client} has been in status ${project.status} for more than 48 hours.`;
+  const subject = `Reminder: ${project.id}`;
+  let text;
+  if (reason === 'MISSING_BOQ') {
+    text = `Project ${project.id} for ${project.client} is missing a BoQ upload.`;
+  } else {
+    text = `Project ${project.id} for ${project.client} has been in status ${project.status} for more than 48 hours.`;
+  }
   try {
     const info = await transporter.sendMail({
       from: process.env.EMAIL_USER,

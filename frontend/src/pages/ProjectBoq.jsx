@@ -13,14 +13,31 @@ export default function ProjectBoq() {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (evt) => {
+    reader.onload = async (evt) => {
       const wb = XLSX.read(evt.target.result, { type: 'binary' });
       const ws = wb.Sheets[wb.SheetNames[0]];
       const json = XLSX.utils.sheet_to_json(ws, { defval: '' });
+      await uploadBoq(file);
+
       priceItems(json);
     };
     reader.readAsBinaryString(file);
   }
+
+   async function uploadBoq(file) {
+    const fd = new FormData();
+    fd.append('file', file);
+    try {
+      const res = await fetch(`${API_URL}/api/projects/${id}/boq`, {
+        method: 'POST',
+        body: fd,
+      });
+      if (!res.ok) throw new Error('Upload failed');
+    } catch (err) {
+      toast.error(err.message);
+    }
+  }
+
 
   async function priceItems(items) {
     try {

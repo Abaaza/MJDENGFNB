@@ -71,6 +71,30 @@ export function addAddendum(folderPath, fileName, content) {
   fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2));
 }
 
+export function addBoqFile(folderPath, fileName, content) {
+  ensureDir(folderPath);
+  const versionName = `${Date.now()}_${fileName}`;
+  fs.writeFileSync(path.join(folderPath, versionName), content);
+
+  const metaPath = path.join(folderPath, 'metadata.json');
+  let meta = {};
+  if (fs.existsSync(metaPath)) {
+    try {
+      meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+    } catch {
+      meta = {};
+    }
+  }
+  meta.boq = meta.boq || [];
+  meta.boq.push({
+    file: versionName,
+    original: fileName,
+    timestamp: new Date().toISOString(),
+  });
+  meta.boqCurrent = fileName;
+  fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2));
+}
+
 export function processEmail(msg) {
   const { projectCode, client, type, due, attachments = [] } = msg;
   const folder = createProjectFolder(projectCode, client, type, due);
