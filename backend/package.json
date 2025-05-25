@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Express + JWT auth API for MJD dashboard",
   "type": "module",
-  "main": "src/server.js",
+  "main": "server.js",
   "scripts": {
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
+    "dev": "nodemon server.js",
+    "start": "node server.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
