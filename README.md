@@ -42,6 +42,8 @@ MongoDB. Without it, an in-memory sample list is used.
 - `GET /api/projects/:id` – fetch one project
 - `PATCH /api/projects/:id` – update status or other fields
 - `POST /api/projects/:id/boq` – upload a BoQ spreadsheet for a project
+- `GET /api/projects/:id/boq` – fetch and price the latest BoQ for a project
+
 
 
 POST /api/boq/bluebeam/boq converts a BlueBeam CSV or XML export into BoQ line items using scale and measurement info.

@@ -42,8 +42,12 @@ def load_rates(path: str) -> dict:
     return rates
 
 
-def apply_rates(boq: list, rates: dict) -> list:
-    """Populate unit rates, costs and profit margin for BoQ items."""
+def apply_rates(boq: list, rates: dict) -> dict:
+    """Populate unit rates, costs and profit margin for BoQ items.
+
+    Returns a dictionary with the priced items, overall total and any rate
+    overrides detected during processing.
+    """
     priced = []
     overrides = []
 
@@ -89,8 +93,9 @@ def apply_rates(boq: list, rates: dict) -> list:
             }
         )
 
-    return priced
+    job_total = sum(i["total"] for i in priced if i.get("total") is not None)
 
+    return {"items": priced, "total": job_total, "overrides": overrides}
 
 if __name__ == "__main__":
     import json
@@ -102,5 +107,5 @@ if __name__ == "__main__":
             items = json.load(f)
     else:
         items = json.load(sys.stdin)
-    priced = apply_rates(items, rates)
-    json.dump(priced, sys.stdout, indent=2)
+    result = apply_rates(items, rates)
+    json.dump(result, sys.stdout, indent=2)

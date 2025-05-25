@@ -4,7 +4,13 @@ import Project from '../models/Project.js';
 import sampleProjects from '../sampleProjects.js';
 import multer from 'multer';
 import fs from 'fs';
-import { getProjectFolder, addAddendum, addBoqFile } from '../services/inquiryService.js';
+import {
+  getProjectFolder,
+  addAddendum,
+  addBoqFile,
+} from '../services/inquiryService.js';
+import { parseBoqFile, priceBoq } from '../services/boqService.js';
+import path from 'path';
 
 const upload = multer({ storage: multer.memoryStorage() });
 const router = Router();
@@ -127,5 +133,28 @@ router.post('/:id/boq', upload.single('file'), async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
+router.get('/:id/boq', async (req, res) => {
+  const { id } = req.params;
+  const folder = getProjectFolder(id);
+  if (!folder) return res.status(404).json({ message: 'Project folder not found' });
+
+  try {
+    const meta = JSON.parse(
+      fs.readFileSync(path.join(folder, 'metadata.json'), 'utf8')
+    );
+    const last = meta.boq && meta.boq[meta.boq.length - 1];
+    if (!last) return res.status(404).json({ message: 'BoQ not found' });
+    const filePath = path.join(folder, last.file);
+
+    const items = parseBoqFile(filePath);
+    const rateFile = process.env.RATE_FILE;
+    const result = rateFile ? priceBoq(items, rateFile) : { items };
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
 
 export default router;
