@@ -106,6 +106,8 @@ export default function ProjectTable({ projects }) {
               {TH('type', 'Type')}
               {TH('due', 'Due')}
               <th className="px-6 py-3">Status</th>
+              <th className="px-6 py-3">BoQ</th>
+
             </tr>
           </thead>
 
@@ -134,6 +136,13 @@ export default function ProjectTable({ projects }) {
                   </td>
                   <td className="px-6 py-4">
                     <StatusBadge label={p.status} />
+                  </td>
+                   <td className="px-6 py-4">
+                    {p.boqUploaded ? (
+                      <span className="text-green-600">✔</span>
+                    ) : (
+                      <span className="text-red-600 font-semibold">Missing</span>
+                    )}
                   </td>
                 </tr>
               );
