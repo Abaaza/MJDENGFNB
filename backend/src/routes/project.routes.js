@@ -9,7 +9,7 @@ import {
   addAddendum,
   addBoqFile,
   savePricingResult,
-
+  getPricingHistory,
 } from '../services/inquiryService.js';
 import { parseBoqFile, priceBoq } from '../services/boqService.js';
 import path from 'path';
@@ -195,5 +195,19 @@ router.post('/:id/price', async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
+// Get pricing history for a project
+router.get('/:id/pricing', (req, res) => {
+  const { id } = req.params;
+  const folder = getProjectFolder(id);
+  if (!folder) return res.status(404).json({ message: 'Project folder not found' });
+  try {
+    const history = getPricingHistory(folder);
+    res.json(history);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
 
 export default router;

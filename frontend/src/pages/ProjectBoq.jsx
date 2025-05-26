@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import * as XLSX from 'xlsx';
 
@@ -8,6 +8,23 @@ const API_URL = import.meta.env.VITE_API_URL;
 export default function ProjectBoq() {
   const { id } = useParams();
   const [rows, setRows] = useState([]);
+  const [history, setHistory] = useState([]);
+
+  useEffect(() => {
+    async function fetchHistory() {
+      try {
+        const res = await fetch(`${API_URL}/api/projects/${id}/pricing`);
+        if (res.ok) {
+          const data = await res.json();
+          setHistory(data);
+          if (data.length) setRows(data[data.length - 1].items || []);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+    if (id) fetchHistory();
+  }, [id]);
 
   async function handleFile(e) {
     const file = e.target.files[0];
@@ -108,6 +125,16 @@ export default function ProjectBoq() {
               </tbody>
             </table>
           </div>
+            {history.length > 0 && (
+            <div className="mt-4 text-xs">
+              <p className="font-semibold mb-1">Pricing history</p>
+              <ul className="list-disc pl-4 space-y-1">
+                {history.map((h, i) => (
+                  <li key={i}>{new Date(h.timestamp).toLocaleString()} – total: {h.total}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </>
       )}
     </div>

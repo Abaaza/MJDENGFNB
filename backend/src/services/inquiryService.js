@@ -111,6 +111,18 @@ export function savePricingResult(folderPath, result) {
   fs.writeFileSync(pricePath, JSON.stringify(history, null, 2));
 }
 
+export function getPricingHistory(folderPath) {
+  const pricePath = path.join(folderPath, 'pricing.json');
+  if (!fs.existsSync(pricePath)) return [];
+  try {
+    const history = JSON.parse(fs.readFileSync(pricePath, 'utf8'));
+    return Array.isArray(history) ? history : [];
+  } catch {
+    return [];
+  }
+}
+
+
 
 export function processEmail(msg) {
   const { projectCode, client, type, due, attachments = [] } = msg;
