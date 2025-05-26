@@ -14,8 +14,8 @@ const projectSchema = new mongoose.Schema(
       enum: ['NEW', 'UNDER_REVIEW', 'PRICED', 'SENT'],
       default: 'NEW',
     },
-        boqUploaded: { type: Boolean, default: false },
-
+    boqUploaded: { type: Boolean, default: false },
+    value: { type: Number },
   },
   { timestamps: true }
 );

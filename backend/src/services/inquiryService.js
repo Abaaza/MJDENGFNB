@@ -95,6 +95,23 @@ export function addBoqFile(folderPath, fileName, content) {
   fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2));
 }
 
+export function savePricingResult(folderPath, result) {
+  ensureDir(folderPath);
+  const pricePath = path.join(folderPath, 'pricing.json');
+  let history = [];
+  if (fs.existsSync(pricePath)) {
+    try {
+      history = JSON.parse(fs.readFileSync(pricePath, 'utf8'));
+      if (!Array.isArray(history)) history = [];
+    } catch {
+      history = [];
+    }
+  }
+  history.push({ timestamp: new Date().toISOString(), ...result });
+  fs.writeFileSync(pricePath, JSON.stringify(history, null, 2));
+}
+
+
 export function processEmail(msg) {
   const { projectCode, client, type, due, attachments = [] } = msg;
   const folder = createProjectFolder(projectCode, client, type, due);

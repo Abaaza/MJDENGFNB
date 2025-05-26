@@ -8,6 +8,8 @@ import {
   getProjectFolder,
   addAddendum,
   addBoqFile,
+  savePricingResult,
+
 } from '../services/inquiryService.js';
 import { parseBoqFile, priceBoq } from '../services/boqService.js';
 import path from 'path';
@@ -156,5 +158,36 @@ router.get('/:id/boq', async (req, res) => {
   }
 });
 
+// Price the latest BoQ and store the result
+router.post('/:id/price', async (req, res) => {
+  const { id } = req.params;
+  const folder = getProjectFolder(id);
+  if (!folder) return res.status(404).json({ message: 'Project folder not found' });
+
+  try {
+    const meta = JSON.parse(fs.readFileSync(path.join(folder, 'metadata.json'), 'utf8'));
+    const last = meta.boq && meta.boq[meta.boq.length - 1];
+    if (!last) return res.status(404).json({ message: 'BoQ not found' });
+
+    const filePath = path.join(folder, last.file);
+    const items = parseBoqFile(filePath);
+    const rateFile = process.env.RATE_FILE;
+    if (!rateFile) throw new Error('RATE_FILE not configured');
+    const result = priceBoq(items, rateFile);
+
+    savePricingResult(folder, result);
+
+    if (process.env.CONNECTION_STRING) {
+      await Project.findOneAndUpdate({ id }, { value: result.total }).exec();
+    } else {
+      const p = sampleProjects.find(p => p.id === id);
+      if (p) p.value = result.total;
+    }
+
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
 
 export default router;
