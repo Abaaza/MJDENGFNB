@@ -44,12 +44,13 @@ MongoDB. Without it, an in-memory sample list is used.
 - `POST /api/projects/:id/boq` – upload a BoQ spreadsheet for a project
 - `GET /api/projects/:id/boq` – fetch and price the latest BoQ for a project
 - `POST /api/projects/:id/price` – apply rates to the latest BoQ and store the result
+- `POST /api/projects/:id/bluebeam` – upload a BlueBeam CSV or XML file and merge measurements into the project BoQ
+- `POST /api/boq/price` – price an array of BoQ items using the master rate file
 
 
 
 
-POST /api/boq/bluebeam/boq converts a BlueBeam CSV or XML export into BoQ line items using scale and measurement info.
-If the rate file is a CSV it should contain `code`, `rate` and optional `cost` columns. When a `cost` value is present the `/api/boq/price` endpoint will also return `profit` and `margin` fields for each item.
+The BlueBeam import converts CSV or XML exports into BoQ line items, merges them with any client-provided BoQ and flags duplicates. The pricing endpoint reads the rate sheet defined by `RATE_FILE` and returns totals (and profit/margin when cost data is available).
 
 ### Frontend
 

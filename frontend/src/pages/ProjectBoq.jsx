@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { useState } from 'react';
-import * as XLSX from 'xlsx';
 import toast from 'react-hot-toast';
+import * as XLSX from 'xlsx';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -12,44 +12,41 @@ export default function ProjectBoq() {
   async function handleFile(e) {
     const file = e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async (evt) => {
-      const wb = XLSX.read(evt.target.result, { type: 'binary' });
-      const ws = wb.Sheets[wb.SheetNames[0]];
-const csv = XLSX.utils.sheet_to_csv(ws);
-      try {
-        const res = await fetch(`${API_URL}/api/boq/${id}/import/bluebeam`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ csv }),
-        });
-        if (!res.ok) throw new Error('Failed to import');
-        const data = await res.json();
-        setRows(data);
-        toast.success('BoQ imported');
-      } catch (err) {
-        toast.error(err.message);
-      }      await uploadBoq(file);
 
-      priceItems(json);
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      try {
+        const data = event.target.result;
+        const workbook = XLSX.read(data, { type: 'binary' });
+        const ws = workbook.Sheets[workbook.SheetNames[0]];
+        const json = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+        await uploadBoq(file);
+        priceItems(json);
+      } catch (err) {
+        toast.error('Failed to read file');
+      }
     };
+
     reader.readAsBinaryString(file);
   }
 
-   async function uploadBoq(file) {
+  async function uploadBoq(file) {
     const fd = new FormData();
     fd.append('file', file);
     try {
-      const res = await fetch(`${API_URL}/api/projects/${id}/boq`, {
+      const res = await fetch(`${API_URL}/api/projects/${id}/bluebeam`, {
         method: 'POST',
         body: fd,
       });
-      if (!res.ok) throw new Error('Upload failed');
+      if (!res.ok) throw new Error('Import failed');
+      const data = await res.json();
+      setRows(data);
+      toast.success('Measurements merged');
     } catch (err) {
       toast.error(err.message);
     }
   }
-
 
   async function priceItems(items) {
     try {
@@ -77,33 +74,41 @@ const csv = XLSX.utils.sheet_to_csv(ws);
         </Link>
       </div>
 
-      <input type="file" accept=".xls,.xlsx,.csv" onChange={handleFile} />
+      <input type="file" accept=".xls,.xlsx,.csv,.xml" onChange={handleFile} />
 
       {rows.length > 0 && (
-        <div className="overflow-x-auto border rounded">
-          <table className="min-w-full text-xs">
-            <thead className="bg-gray-50">
-              <tr>
-                {Object.keys(rows[0]).map((h) => (
-                  <th key={h} className="px-2 py-1 whitespace-nowrap text-left border-r">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((r, i) => (
-                <tr key={i}>
-                  {Object.values(r).map((val, j) => (
-                    <td key={j} className="px-2 py-1 border-t border-r">
-                      {val}
-                    </td>
+        <>
+          <button
+            onClick={() => priceItems(rows)}
+            className="mt-2 mb-2 px-3 py-1 bg-brand-dark text-white rounded"
+          >
+            Price BoQ
+          </button>
+          <div className="overflow-x-auto border rounded">
+            <table className="min-w-full text-xs">
+              <thead className="bg-gray-50">
+                <tr>
+                  {Object.keys(rows[0]).map((h) => (
+                    <th key={h} className="px-2 py-1 whitespace-nowrap text-left border-r">
+                      {h}
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {rows.map((r, i) => (
+                  <tr key={i}>
+                    {Object.values(r).map((val, j) => (
+                      <td key={j} className="px-2 py-1 border-t border-r">
+                        {val}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );
