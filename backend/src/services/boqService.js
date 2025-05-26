@@ -10,11 +10,27 @@ export function parseBoqFile(filePath) {
   const wb = XLSX.readFile(filePath);
   const ws = wb.Sheets[wb.SheetNames[0]];
   const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+   if (!rows.length) return [];
+
+  const headers = Object.keys(rows[0]);
+  const required = ['Code', 'Description', 'Quantity', 'Unit'];
+  const missing = required.filter(h => !headers.includes(h));
+  if (missing.length) {
+    throw new Error('Missing BoQ columns: ' + missing.join(', '));
+  }
+
   return rows.map(r => ({
-    code: r.Code || '',
-    description: r.Description || '',
-    qty: Number(r.Quantity || 0),
+      code: r.Code || r.code || '',
+    description: r.Description || r.Name || '',
+    qty: Number(r.Quantity || r.Qty || 0),
     unit: r.Unit || '',
+    unit_rate:
+      r['Unit Rate'] !== undefined
+        ? Number(r['Unit Rate'] || 0)
+        : r.Rate !== undefined
+        ? Number(r.Rate || 0)
+        : undefined,
   }));
 }
 

@@ -123,6 +123,12 @@ router.post('/:id/boq', upload.single('file'), async (req, res) => {
   if (!folder) return res.status(404).json({ message: 'Project folder not found' });
   if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
   try {
+    const tmp = path.join('/tmp', `${Date.now()}_${req.file.originalname}`);
+    fs.writeFileSync(tmp, req.file.buffer);
+    // will throw if headers missing
+    parseBoqFile(tmp);
+    fs.unlinkSync(tmp);
+
     addBoqFile(folder, req.file.originalname, req.file.buffer);
     if (process.env.CONNECTION_STRING) {
       await Project.findOneAndUpdate({ id }, { boqUploaded: true }).exec();
