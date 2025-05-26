@@ -1,0 +1,8 @@
+Description,Measurement,Units,Scale
+Excavation,100,m3,1:50
+Concrete volume,50,m3,1:50
+Steel length,100,m,1:75
+Roof area,200,m2,1:100
+Window count,30,ea,1:1
+Door count,20,ea,1:1
+Floor finishes,500,m2,1:100
