@@ -9,15 +9,27 @@ export default function ProjectBoq() {
   const { id } = useParams();
   const [rows, setRows] = useState([]);
 
-  function handleFile(e) {
+  async function handleFile(e) {
     const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = async (evt) => {
       const wb = XLSX.read(evt.target.result, { type: 'binary' });
       const ws = wb.Sheets[wb.SheetNames[0]];
-      const json = XLSX.utils.sheet_to_json(ws, { defval: '' });
-      await uploadBoq(file);
+const csv = XLSX.utils.sheet_to_csv(ws);
+      try {
+        const res = await fetch(`${API_URL}/api/boq/${id}/import/bluebeam`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ csv }),
+        });
+        if (!res.ok) throw new Error('Failed to import');
+        const data = await res.json();
+        setRows(data);
+        toast.success('BoQ imported');
+      } catch (err) {
+        toast.error(err.message);
+      }      await uploadBoq(file);
 
       priceItems(json);
     };

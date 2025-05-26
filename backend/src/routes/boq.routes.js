@@ -1,61 +1,55 @@
-// src/routes/boq.routes.js
 import { Router } from 'express';
-import { parseBoqFile, mergeBoq, importBluebeam, priceBoq, measurementsToBoq } from '../services/boqService.js';
-import multer from 'multer';
+function parseCSV(text) {
+  const lines = text.trim().split(/\r?\n/);
+  const headers = lines.shift().split(',').map(h => h.trim());
+  return lines.map(l => {
+    const cols = l.split(',');
+    const obj = {};
+    headers.forEach((h, i) => {
+      obj[h] = cols[i] ? cols[i].trim() : '';
+    });
+    return obj;
+  });
+}
+import BoqItem from '../models/BoqItem.js';
+import Project from '../models/Project.js';
 
-const upload = multer({ dest: 'uploads/' });
 const router = Router();
 
-// upload and parse a BoQ spreadsheet
-router.post('/upload', upload.single('file'), (req, res) => {
+// List BoQ items for a project
+router.get('/:projectId', async (req, res) => {
+  const { projectId } = req.params;
+  const project = await Project.findOne({ id: projectId });
+  if (!project) return res.status(404).json({ message: 'Project not found' });
+  const items = await BoqItem.find({ projectId: project._id });
+  res.json(items);
+});
+
+// Import BlueBeam CSV
+router.post('/:projectId/import/bluebeam', async (req, res) => {
+  const { projectId } = req.params;
+  const project = await Project.findOne({ id: projectId });
+  if (!project) return res.status(404).json({ message: 'Project not found' });
+  const { csv } = req.body;
+  if (!csv) return res.status(400).json({ message: 'No CSV data provided' });
   try {
-    const rows = parseBoqFile(req.file.path);
-    res.json(rows);
+    const records = parseCSV(csv);
+    const docs = records.map(r => ({
+      projectId: project._id,
+      itemCode: r.Code || '',
+      description: r.Description || r.Name || '',
+      quantity: parseFloat(r.Quantity || r.Length || '0'),
+      unit: r.Unit || 'ea',
+      unitRate: 0,
+      total: 0,
+      source: 'BLUEBEAM'
+    }));
+    const inserted = await BoqItem.insertMany(docs);
+    res.json(inserted);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    console.error(err);
+    res.status(500).json({ message: 'Parse failed' });
   }
 });
-
-// merge client BoQ with system items
-router.post('/merge', (req, res) => {
-  const { clientBoq, systemItems } = req.body;
-  const merged = mergeBoq(clientBoq || [], systemItems || []);
-  res.json(merged);
-});
-
-// import measurements from BlueBeam export
-router.post('/bluebeam', upload.single('file'), async (req, res) => {
-  try {
-    const items = await importBluebeam(req.file.path);
-    res.json(items);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-
-// parse BlueBeam export and convert to BoQ line items
-router.post('/bluebeam/boq', upload.single('file'), async (req, res) => {
-  try {
-    const measurements = await importBluebeam(req.file.path);
-    const boqItems = measurementsToBoq(measurements);
-    res.json(boqItems);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-
-// price a list of BoQ items and calculate profit margin
-router.post('/price', (req, res) => {
-  try {
-    const items = req.body.items || [];
-    const rateFile = process.env.RATE_FILE;
-    if (!rateFile) throw new Error('RATE_FILE not configured');
-    const priced = priceBoq(items, rateFile);
-    res.json(priced);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-});
-
 
 export default router;
