@@ -4,6 +4,8 @@ function preprocess(text) {
   return String(text || '')
     .toLowerCase()
     .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\b\d+(?:\.\d+)?\b/g, ' ') // drop standalone numbers
+    .replace(/\s+(mm|cm|m|inch|in|ft)\b/g, ' ') // drop units
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -43,12 +45,24 @@ function jaccard(a, b) {
   return inter / (setA.size + setB.size - inter);
 }
 
+function tokenSetRatio(a, b) {
+  const setA = new Set(a.split(' '));
+  const setB = new Set(b.split(' '));
+  const inter = new Set([...setA].filter(x => setB.has(x)));
+  const aLeft = [...setA].filter(x => !inter.has(x)).join(' ');
+  const bLeft = [...setB].filter(x => !inter.has(x)).join(' ');
+  const sortedInter = [...inter].sort().join(' ');
+  const ratio1 = ratio(sortedInter + ' ' + aLeft, sortedInter + ' ' + bLeft);
+  const ratio2 = ratio(sortedInter, sortedInter + ' ' + aLeft + ' ' + bLeft);
+  return Math.max(ratio1, ratio2);
+}
+
 function detectHeader(rows) {
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i].map(v => String(v).trim());
     if (
-      row.some(c => /description/i.test(c)) &&
-      row.some(c => /rate/i.test(c))
+      row.some(c => /(description|desc|details)/i.test(c)) &&
+      row.some(c => /(rate|price|unit\s*price|unit\s*rate)/i.test(c))
     ) {
       return { header: row, index: i };
     }
@@ -58,10 +72,10 @@ function detectHeader(rows) {
 
 function parseRows(rows, startIdx) {
   const header = rows[startIdx];
-  const codeIdx = header.findIndex(h => /code|item|ref|id/i.test(h));
-  const descIdx = header.findIndex(h => /description/i.test(h));
-  const qtyIdx = header.findIndex(h => /qty|quantity/i.test(h));
-  const rateIdx = header.findIndex(h => /rate|price/i.test(h));
+  const codeIdx = header.findIndex(h => /(code|item|ref|id)/i.test(h));
+  const descIdx = header.findIndex(h => /(description|desc|details)/i.test(h));
+  const qtyIdx = header.findIndex(h => /(qty|quantity|amount)/i.test(h));
+  const rateIdx = header.findIndex(h => /(rate|price|unit\s*price|unit\s*rate)/i.test(h));
 
   const items = [];
   for (let i = startIdx + 1; i < rows.length; i++) {
@@ -110,8 +124,9 @@ export function matchItems(inputItems, priceItems) {
     let best = null;
     let bestScore = 0;
     for (const p of priceItems) {
-      const s = 0.6 * ratio(item.descClean, p.descClean) +
-                0.4 * jaccard(item.descClean, p.descClean);
+      const base = 0.6 * ratio(item.descClean, p.descClean) +
+                   0.4 * jaccard(item.descClean, p.descClean);
+      const s = Math.max(base, tokenSetRatio(item.descClean, p.descClean));
       if (s > bestScore) {
         bestScore = s;
         best = p;
