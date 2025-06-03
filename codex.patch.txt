@@ -1,421 +1,281 @@
-diff --git a/backend/src/routes/project.routes.js b/backend/src/routes/project.routes.js
-index d056190..94456d7 100644
---- a/backend/src/routes/project.routes.js
-+++ b/backend/src/routes/project.routes.js
-@@ -1,32 +1,33 @@
- //src/routes/projects.js
- import { Router } from 'express';
- import { nanoid } from 'nanoid';
- import Project from '../models/Project.js';
-+import sampleProjects from '../sampleProjects.js';
+ (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
+diff --git a/client/src/App.css b/client/src/App.css
+index b9d355df2a5956b526c004531b7b0ffe412461e0..d9dfa8857011339c8852aca0f9767d33d1f8d8ef 100644
+--- a/client/src/App.css
++++ b/client/src/App.css
+@@ -1,42 +1,55 @@
+-#root {
+-  max-width: 1280px;
+-  margin: 0 auto;
+-  padding: 2rem;
+-  text-align: center;
++body, html {
++  margin: 0;
++  padding: 0;
++  font-family: Arial, sans-serif;
++}
++
++header {
++  background: #f0f0f0;
++  padding: 10px 20px;
++  display: flex;
++  justify-content: space-between;
++  align-items: center;
+ }
  
- const router = Router();
+-.logo {
+-  height: 6em;
+-  padding: 1.5em;
+-  will-change: filter;
+-  transition: filter 300ms;
++nav ul {
++  list-style: none;
++  display: flex;
++  gap: 1rem;
++  padding: 0;
++  margin: 0;
+ }
+-.logo:hover {
+-  filter: drop-shadow(0 0 2em #646cffaa);
++
++nav a {
++  text-decoration: none;
++  color: #333;
+ }
+-.logo.react:hover {
+-  filter: drop-shadow(0 0 2em #61dafbaa);
++
++.hero {
++  background: linear-gradient(to right, #008080, #00d4ff);
++  color: #fff;
++  padding: 60px 20px;
++  text-align: center;
+ }
  
- router.get('/', async (_req, res) => {
--  const projects = await Project.find().sort({ due: 1 });
--  res.json(projects);
-+  // Temporary: serve sample projects instead of querying the DB
-+  res.json(sampleProjects);
- });
+-@keyframes logo-spin {
+-  from {
+-    transform: rotate(0deg);
+-  }
+-  to {
+-    transform: rotate(360deg);
+-  }
++.section {
++  padding: 40px 20px;
++  text-align: center;
+ }
  
- router.post('/', async (req, res) => {
-   // normalise to an array
-   const payload = Array.isArray(req.body) ? req.body : [req.body];
+-@media (prefers-reduced-motion: no-preference) {
+-  a:nth-of-type(2) .logo {
+-    animation: logo-spin infinite 20s linear;
+-  }
++.footer {
++  background: #f0f0f0;
++  padding: 20px 20px;
++  text-align: center;
+ }
  
-   // basic validation
-   const invalid = payload.filter(p => !(p.client && p.type && p.due));
-   if (invalid.length) {
-     return res.status(400).json({
-       message: 'Missing required fields',
-       ids: invalid.map(p => p.id || '(no id)')
-     });
-   }
+-.card {
+-  padding: 2em;
++.footer-nav {
++  display: flex;
++  justify-content: center;
++  gap: 1rem;
++  margin-bottom: 20px;
+ }
  
-   // if you always want server-generated IDs, remove p.id here
-   const docs = await Project.insertMany(payload);
-   return res.status(201).json(docs);
- });
+-.read-the-docs {
+-  color: #888;
++.newsletter {
++  margin: 20px 0;
+ }
+diff --git a/client/src/App.jsx b/client/src/App.jsx
+index 7e3751e730855387c37b5bef6bc86448cc691304..1a4e11a60be981b8b67f21767ce06fbdafe484c0 100644
+--- a/client/src/App.jsx
++++ b/client/src/App.jsx
+@@ -1,20 +1,114 @@
+-import { useState, useEffect } from 'react';
++import './App.css';
  
- export default router;
+ function App() {
+-  const [message, setMessage] = useState('');
++  return (
++    <>
++      <header>
++        <img src="https://via.placeholder.com/120x40?text=Treated+Web" alt="Treated Web" />
++        <nav>
++          <ul>
++            <li><a href="#">Home</a></li>
++            <li><a href="#">About Us</a></li>
++            <li><a href="#">Services</a></li>
++            <li><a href="#">Contact</a></li>
++            <li><a href="#">Get Started</a></li>
++          </ul>
++        </nav>
++      </header>
  
-diff --git a/frontend/src/App.jsx b/frontend/src/App.jsx
-index c299dff..caf6245 100644
---- a/frontend/src/App.jsx
-+++ b/frontend/src/App.jsx
-@@ -1,36 +1,55 @@
--import { Routes, Route } from 'react-router-dom';
-+import { Routes, Route, Navigate } from 'react-router-dom';
- import Sidebar from './components/Sidebar';
- import TopBar from './components/TopBar';
- import Dashboard from './pages/Dashboard';
- import ProjectOverview from './pages/ProjectOverview';
- import ProjectDocuments from './pages/ProjectDocuments';
- import ProjectBoq from './pages/ProjectBoq';
- import NewProject from './pages/NewProject';
-+import Login from './pages/Login';
-+import Register from './pages/Register';
-+import { AuthProvider, useAuth } from './contexts/AuthContext';
+-  useEffect(() => {
+-    fetch('http://localhost:3001/api')
+-      .then(res => res.json())
+-      .then(data => setMessage(data.message));
+-  }, []);
++      <section className="hero">
++        <h1>Grow Smarter, Perform Better, Smile Wider</h1>
++        <p>
++          Digital solutions built for dental and healthcare clinics — lead
++          generation, data management, web presence, and beyond.
++        </p>
++        <button>Get Started</button>
++      </section>
  
--
--const user = { name: 'Mark' }; // stub
--
--export default function App() {
-+function AuthedApp() {
-   return (
-     <div className="flex">
-       <Sidebar />
--
-       <div className="flex-1 bg-brand-light min-h-screen">
--        {/* TopBar now full width without inner padding constraints */}
--        <TopBar user={user} />
--
--        {/* Main content with internal padding */}
-+        <TopBar />
-         <main className="p-8 space-y-6">
-           <Routes>
-             <Route index element={<Dashboard />} />
-             <Route path="/new-project" element={<NewProject />} />
-             <Route path="/projects/:id" element={<ProjectOverview />} />
-             <Route path="/projects/:id/documents" element={<ProjectDocuments />} />
-             <Route path="/projects/:id/boq" element={<ProjectBoq />} />
--            <Route path="*" element={<p className="text-gray-500">Not found</p>} />
-+            <Route path="*" element={<Navigate to="/" replace />} />
-           </Routes>
-         </main>
-       </div>
-     </div>
+-  return (
+-    <div>
+-      <h1>Frontend with Vite</h1>
+-      <p>Message from backend: {message}</p>
+-    </div>
++      <section className="section">
++        <h2>Let’s Build the Future of your Clinic Together.</h2>
++        <p>
++          Streamline your patient workflow with fast, accurate, and compliant
++          data entry for Invisalign and iTero systems.
++        </p>
++        <h3>Treatment Plans</h3>
++      </section>
++
++      <section className="section">
++        <p>
++          Get more high-quality dental leads with targeted Google Ads and Meta
++          (Facebook & Instagram) ad campaigns.
++        </p>
++        <h3>Paid Advertising</h3>
++      </section>
++
++      <section className="section">
++        <p>
++          Professional, patient-friendly websites that convert visitors into
++          bookings — built to perform and represent your brand.
++        </p>
++        <h3>Web Design</h3>
++      </section>
++
++      <section className="section">
++        <h3>More Services</h3>
++        <ul>
++          <li>Search Engine Optimization</li>
++          <li>Social Media Marketing</li>
++          <li>Branding & Print</li>
++          <li>Video Production</li>
++          <li>All Features</li>
++        </ul>
++      </section>
++
++      <section className="section">
++        <h2>Your Growth Partner in the Digital Space</h2>
++        <p>
++          At Treated Digital Solutions, we specialize in helping dental and
++          healthcare clinics unlock their true potential online. We combine
++          precision, creativity, and industry expertise to deliver marketing,
++          web, and data solutions that truly make a difference.
++        </p>
++        <a href="#">Learn More</a>
++      </section>
++
++      <section className="section">
++        <h2>Our Journey in Numbers</h2>
++        <p>3+ Years of Experience</p>
++        <p>20+ Trusted Clients</p>
++        <p>75k+ Leads Generated</p>
++      </section>
++
++      <section className="section">
++        <h2>Get All The Tools You Need At a Single Spot</h2>
++        <button>Get Started</button>
++      </section>
++
++      <footer className="footer">
++        <div className="footer-nav">
++          <a href="#">Home</a>
++          <a href="#">About Us</a>
++          <a href="#">Services</a>
++          <a href="#">Contact</a>
++        </div>
++        <div className="newsletter">
++          <div>Stay Up to Date</div>
++          <input type="email" placeholder="Email*" />
++          <button>Submit</button>
++          <div>
++            <label>
++              <input type="checkbox" /> Yes, subscribe me to your newsletter.
++            </label>
++          </div>
++        </div>
++        <p>info@treatedds.com</p>
++        <div>
++          <a href="#">Facebook</a> | <a href="#">LinkedIn</a>
++        </div>
++        <p>© 2025 by Treated Digital Solutions, All rights reserved.</p>
++      </footer>
++    </>
    );
  }
-+
-+function UnauthedApp() {
-+  return (
-+    <Routes>
-+      <Route path="/login" element={<Login />} />
-+      <Route path="/register" element={<Register />} />
-+      <Route path="*" element={<Navigate to="/login" replace />} />
-+    </Routes>
-+  );
-+}
-+
-+function RouterSwitch() {
-+  const { user } = useAuth();
-+  return user ? <AuthedApp /> : <UnauthedApp />;
-+}
-+
-+export default function App() {
-+  return (
-+    <AuthProvider>
-+      <RouterSwitch />
-+    </AuthProvider>
-+  );
-+}
-diff --git a/frontend/src/components/TopBar.jsx b/frontend/src/components/TopBar.jsx
-index 50c2000..f53291a 100644
---- a/frontend/src/components/TopBar.jsx
-+++ b/frontend/src/components/TopBar.jsx
-@@ -1,39 +1,38 @@
- import { Menu, Transition } from '@headlessui/react';
- import { Fragment } from 'react';
- import {
-   UserCircleIcon,
-   ArrowRightOnRectangleIcon,
- } from '@heroicons/react/24/outline';
--import { useNavigate } from 'react-router-dom';
-+import { useAuth } from '../contexts/AuthContext';
  
--export default function TopBar({ user }) {
--  const navigate = useNavigate();
-+export default function TopBar() {
-+  const { user, logout } = useAuth();
+ export default App;
+diff --git a/client/src/index.css b/client/src/index.css
+index 08a3ac9e1e5c44ce374f782d7c4fa3aa70e4c1ff..fb92a9f80d3a990e5ac648daee175e3bbf70694c 100644
+--- a/client/src/index.css
++++ b/client/src/index.css
+@@ -2,52 +2,50 @@
+   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+   line-height: 1.5;
+   font-weight: 400;
  
-   function handleLogout() {
--    // TODO – hook into real auth
--    navigate('/login');
-+    logout();
-   }
+   color-scheme: light dark;
+   color: rgba(255, 255, 255, 0.87);
+   background-color: #242424;
  
-   return (
- <header className="flex items-center justify-between px-6 py-3 bg-black text-white shadow">
-   <h2 className="text-lg font-medium">
-     Welcome,&nbsp;<span className="font-semibold">{user.name}</span>
-   </h2>
+   font-synthesis: none;
+   text-rendering: optimizeLegibility;
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+ }
  
-   <Menu as="div" className="relative">
-     <Menu.Button className="flex items-center gap-2 select-none">
-       <UserCircleIcon className="h-7 w-7 text-white" />
-       <span className="hidden sm:inline">{user.name}</span>
-     </Menu.Button>
+ a {
+   font-weight: 500;
+   color: #646cff;
+   text-decoration: inherit;
+ }
+ a:hover {
+   color: #535bf2;
+ }
  
-     <Transition
-       as={Fragment}
-       enter="transition ease-out duration-100"
-       enterFrom="transform opacity-0 scale-95"
-       enterTo="transform opacity-100 scale-100"
-       leave="transition ease-in duration-75"
-       leaveFrom="transform opacity-100 scale-100"
-       leaveTo="transform opacity-0 scale-95"
-     >
-       <Menu.Items className="absolute right-0 mt-2 w-40 origin-top-right rounded-md bg-white text-black shadow-lg focus:outline-none p-1">
-         <Menu.Item>
-diff --git a/frontend/src/contexts/AuthContext.jsx b/frontend/src/contexts/AuthContext.jsx
-new file mode 100644
-index 0000000..5980d2c
---- /dev/null
-+++ b/frontend/src/contexts/AuthContext.jsx
-@@ -0,0 +1,66 @@
-+import { createContext, useContext, useState } from 'react';
-+import { useNavigate } from 'react-router-dom';
-+import toast from 'react-hot-toast';
-+
-+const API_URL = import.meta.env.VITE_API_URL;
-+
-+const AuthContext = createContext();
-+
-+export function AuthProvider({ children }) {
-+  const navigate = useNavigate();
-+  const [user, setUser] = useState(() => {
-+    const stored = localStorage.getItem('user');
-+    return stored ? JSON.parse(stored) : null;
-+  });
-+  const [token, setToken] = useState(() => localStorage.getItem('token'));
-+
-+  async function login(credentials) {
-+    const res = await fetch(`${API_URL}/api/auth/login`, {
-+      method: 'POST',
-+      headers: { 'Content-Type': 'application/json' },
-+      body: JSON.stringify(credentials),
-+    });
-+    if (!res.ok) throw new Error('Bad credentials');
-+    const data = await res.json();
-+    setToken(data.token);
-+    setUser(data.user);
-+    localStorage.setItem('token', data.token);
-+    localStorage.setItem('user', JSON.stringify(data.user));
-+    navigate('/');
-+  }
-+
-+  async function register(details) {
-+    const res = await fetch(`${API_URL}/api/auth/register`, {
-+      method: 'POST',
-+      headers: { 'Content-Type': 'application/json' },
-+      body: JSON.stringify(details),
-+    });
-+    if (!res.ok) throw new Error('Registration failed');
-+    const data = await res.json();
-+    setToken(data.token);
-+    setUser(data.user);
-+    localStorage.setItem('token', data.token);
-+    localStorage.setItem('user', JSON.stringify(data.user));
-+    navigate('/');
-+  }
-+
-+  function logout() {
-+    setToken(null);
-+    setUser(null);
-+    localStorage.removeItem('token');
-+    localStorage.removeItem('user');
-+    navigate('/login');
-+  }
-+
-+  return (
-+    <AuthContext.Provider value={{ user, token, login, register, logout }}>
-+      {children}
-+    </AuthContext.Provider>
-+  );
-+}
-+
-+export function useAuth() {
-+  const ctx = useContext(AuthContext);
-+  if (!ctx) throw new Error('AuthContext not found');
-+  return ctx;
-+}
-diff --git a/frontend/src/pages/Login.jsx b/frontend/src/pages/Login.jsx
-new file mode 100644
-index 0000000..cf7a3a3
---- /dev/null
-+++ b/frontend/src/pages/Login.jsx
-@@ -0,0 +1,61 @@
-+import { useState } from 'react';
-+import { Link } from 'react-router-dom';
-+import { useAuth } from '../contexts/AuthContext';
-+import toast from 'react-hot-toast';
-+
-+export default function Login() {
-+  const { login } = useAuth();
-+  const [form, setForm] = useState({ email: '', password: '' });
-+
-+  function handleChange(e) {
-+    setForm({ ...form, [e.target.name]: e.target.value });
-+  }
-+
-+  async function handleSubmit(e) {
-+    e.preventDefault();
-+    try {
-+      await login(form);
-+    } catch (err) {
-+      toast.error(err.message);
-+    }
-+  }
-+
-+  return (
-+    <div className="flex items-center justify-center min-h-screen bg-brand-light">
-+      <form
-+        onSubmit={handleSubmit}
-+        className="bg-white p-6 shadow rounded space-y-4 w-80"
-+      >
-+        <h1 className="text-xl font-semibold text-center">Login</h1>
-+        <input
-+          name="email"
-+          type="email"
-+          value={form.email}
-+          onChange={handleChange}
-+          className="w-full border p-2 rounded"
-+          placeholder="Email"
-+        />
-+        <input
-+          name="password"
-+          type="password"
-+          value={form.password}
-+          onChange={handleChange}
-+          className="w-full border p-2 rounded"
-+          placeholder="Password"
-+        />
-+        <button
-+          type="submit"
-+          className="w-full bg-brand-dark text-white py-2 rounded"
-+        >
-+          Login
-+        </button>
-+        <p className="text-center text-sm">
-+          No account?{' '}
-+          <Link className="text-brand-dark" to="/register">
-+            Register
-+          </Link>
-+        </p>
-+      </form>
-+    </div>
-+  );
-+}
-diff --git a/frontend/src/pages/ProjectOverview.jsx b/frontend/src/pages/ProjectOverview.jsx
-index 294994a..70c62bc 100644
---- a/frontend/src/pages/ProjectOverview.jsx
-+++ b/frontend/src/pages/ProjectOverview.jsx
-@@ -1,36 +1,38 @@
- import { Link, useParams, useNavigate } from 'react-router-dom';
--import { sampleProjects } from '../data/sampleProjects';
-+import { useProjects } from '../hooks/useProjects';
- import StatusBadge from '../components/StatusBadge';
- import format from 'date-fns/format';
+ body {
+   margin: 0;
+-  display: flex;
+-  place-items: center;
+   min-width: 320px;
+   min-height: 100vh;
+ }
  
- export default function ProjectOverview() {
-   const { id } = useParams();
-   const navigate = useNavigate();
+ h1 {
+   font-size: 3.2em;
+   line-height: 1.1;
+ }
  
--  // ⚠️ replace with real fetch when API is ready
--  const project = sampleProjects.find((p) => p.id === id);
-+  const { data: projects, isLoading } = useProjects();
-+  const project = projects?.find((p) => p.id === id);
-+
-+  if (isLoading) return <p>Loading...</p>;
- 
-   if (!project)
-     return (
-       <p className="text-gray-500">
-         Project not found. <button onClick={() => navigate(-1)} className="underline text-brand-accent">Go back</button>
-       </p>
-     );
- 
-   return (
-     <div className="space-y-6">
-       <div className="flex items-center justify-between">
-         <h1 className="text-2xl font-semibold text-brand-dark">
-           {project.id} – {project.client}
-         </h1>
- 
-         <Link to="/" className="text-brand-accent underline">
-           ← Back
-         </Link>
-       </div>
- 
-       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
-         <p>
-           <strong>Type:</strong> {project.type}
-         </p>
-         <p>
-diff --git a/frontend/src/pages/Register.jsx b/frontend/src/pages/Register.jsx
-new file mode 100644
-index 0000000..3f14cc0
---- /dev/null
-+++ b/frontend/src/pages/Register.jsx
-@@ -0,0 +1,69 @@
-+import { useState } from 'react';
-+import { Link } from 'react-router-dom';
-+import { useAuth } from '../contexts/AuthContext';
-+import toast from 'react-hot-toast';
-+
-+export default function Register() {
-+  const { register } = useAuth();
-+  const [form, setForm] = useState({ name: '', email: '', password: '' });
-+
-+  function handleChange(e) {
-+    setForm({ ...form, [e.target.name]: e.target.value });
-+  }
-+
-+  async function handleSubmit(e) {
-+    e.preventDefault();
-+    try {
-+      await register(form);
-+    } catch (err) {
-+      toast.error(err.message);
-+    }
-+  }
-+
-+  return (
-+    <div className="flex items-center justify-center min-h-screen bg-brand-light">
-+      <form
-+        onSubmit={handleSubmit}
-+        className="bg-white p-6 shadow rounded space-y-4 w-80"
-+      >
-+        <h1 className="text-xl font-semibold text-center">Register</h1>
-+        <input
-+          name="name"
-+          type="text"
-+          value={form.name}
-+          onChange={handleChange}
-+          className="w-full border p-2 rounded"
-+          placeholder="Name"
-+        />
-+        <input
-+          name="email"
-+          type="email"
-+          value={form.email}
-+          onChange={handleChange}
-+          className="w-full border p-2 rounded"
-+          placeholder="Email"
-+        />
-+        <input
-+          name="password"
-+          type="password"
-+          value={form.password}
-+          onChange={handleChange}
-+          className="w-full border p-2 rounded"
-+          placeholder="Password"
-+        />
-+        <button
-+          type="submit"
-+          className="w-full bg-brand-dark text-white py-2 rounded"
-+        >
-+          Register
-+        </button>
-+        <p className="text-center text-sm">
-+          Already have an account?{' '}
-+          <Link className="text-brand-dark" to="/login">
-+            Login
-+          </Link>
-+        </p>
-+      </form>
-+    </div>
-+  );
-+}
+ button {
+   border-radius: 8px;
+   border: 1px solid transparent;
+   padding: 0.6em 1.2em;
+   font-size: 1em;
+   font-weight: 500;
+   font-family: inherit;
+   background-color: #1a1a1a;
+   cursor: pointer;
+   transition: border-color 0.25s;
+ }
+ button:hover {
+   border-color: #646cff;
+ }
+ button:focus,
+ button:focus-visible {
  
 EOF
+)
