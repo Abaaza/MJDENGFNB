@@ -2,64 +2,38 @@
 
 This repository contains a sample backend and frontend for the estimating dashboard.
 
-## Email Listener
+## Batch Pricing
 
-Patch 1 introduces a simple email listener service. The listener connects to an IMAP mailbox defined by the environment variables below and forwards any unread messages to the inquiry service. Each email results in a project folder under `SHAREFILE_BASE`.
+The script `backend/scripts/batchPrice.js` processes one or more BoQ spreadsheets and writes priced Excel files alongside the originals. It relies on the `RATE_FILE` environment variable which should point to the master price list.
 
-Patch 2 adds a status watcher that emails the estimating team if a project stays
-in the same status for more than 48 hours. The watcher runs hourly and uses
-Nodemailer. Configure `EMAIL_USER` and `EMAIL_PASS` (and optionally `SMTP_HOST`
-and `SMTP_PORT`) to enable reminders.
+Run it with:
 
+```bash
+node backend/scripts/batchPrice.js ./path/to/boq1.xlsx ./path/to/boq2.xlsx
+```
 
-### Required environment variables
+Each output file is named `priced_<original>.xlsx` in the same folder.
 
-- `INBOX_USER` – mailbox username
-- `INBOX_PASS` – mailbox password
-- `INBOX_HOST` – IMAP server host
-- `INBOX_PORT` – IMAP server port (defaults to 993)
-- `SHAREFILE_BASE` – local path for storing project folders
-- `RATE_FILE` – path to the master rate Excel sheet
-
-
-
-Start the backend with these variables set and the server will automatically poll the inbox every minute.
-
-Incoming emails create a folder named `Tender_[ProjectCode]_[Date]` under `SHAREFILE_BASE` with a `metadata.json` file.
-The listener extracts the project code from the email subject (e.g. `TD-001`) and
-reuses the same folder when follow‑up emails arrive. Attachments are saved as
-addenda with timestamps and the most recent file is tracked in `current.txt`.
-
-The pricing endpoint relies on Python 3 with the `openpyxl` package installed. Set the `RATE_FILE` environment variable to the location of your master price sheet.
 ## Project API
 
-The `/api/projects` endpoints now provide basic CRUD operations. When the
-`CONNECTION_STRING` environment variable is set, projects are persisted to
-MongoDB. Without it, an in-memory sample list is used.
+The `/api/projects` endpoints provide basic CRUD operations. When the `CONNECTION_STRING` environment variable is set, projects are stored in MongoDB. Without it, an in-memory sample list is used.
 
 - `GET /api/projects` – list all projects
 - `POST /api/projects` – create a new project
 - `GET /api/projects/:id` – fetch one project
 - `PATCH /api/projects/:id` – update status or other fields
 - `POST /api/projects/:id/boq` – upload a BoQ spreadsheet for a project
-- `GET /api/projects/:id/boq` – fetch and price the latest BoQ for a project
-  *The file is validated to ensure the columns `Code`, `Description`, `Quantity`
-  and `Unit` exist. If a `Unit Rate` or `Rate` column is present it will be used
-  as a manual override during pricing.*
+- `GET /api/projects/:id/boq` – fetch and price the latest BoQ
 - `POST /api/projects/:id/price` – apply rates to the latest BoQ and store the result
 - `POST /api/projects/:id/bluebeam` – upload a BlueBeam CSV or XML file and merge measurements into the project BoQ
 - `POST /api/boq/price` – price an array of BoQ items using the master rate file
 
-
-
-
-The BlueBeam import converts CSV or XML exports into BoQ line items, merges them with any client-provided BoQ and flags duplicates. The pricing endpoint reads the rate sheet defined by `RATE_FILE` and returns totals (and profit/margin when cost data is available).
+The BlueBeam import converts CSV or XML exports into BoQ line items and flags duplicates. The pricing endpoint reads the rate sheet defined by `RATE_FILE` and returns totals (and profit/margin when cost data is available).
 
 ### Frontend
 
 The frontend expects `VITE_API_URL` to point at the running backend. A sample `.env` file in `frontend/` sets this to `http://localhost:4000` for local development.
 
-The frontend expects `VITE_API_URL` to point at the running backend. A sample `.env` file in `frontend/` sets this to `http://localhost:4000` for local development.
 ### Sample data
 
 Several sample files are available in `backend/pricing` for local testing:
