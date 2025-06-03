@@ -3,7 +3,7 @@
 
 import path from 'path';
 import { spawnSync } from 'child_process';
-import * as XLSX from 'xlsx';
+import XLSX from 'xlsx';
 import { parseCSV, parseXML } from './bluebeamParser.js';
 
 export function parseBoqFile(filePath) {
