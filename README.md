@@ -14,6 +14,16 @@ node backend/scripts/batchPrice.js ./path/to/boq1.xlsx ./path/to/boq2.xlsx
 
 Each output file is named `priced_<original>.xlsx` in the same folder.
 
+## Importing Lookalike Price Sheet
+
+The script `backend/scripts/importPriceList.js` reads the **Lookalike sheet.xlsx**
+file and stores the price items in MongoDB. Ensure `CONNECTION_STRING` is set in
+`backend/.env` then run:
+
+```bash
+npm run import-prices --prefix backend
+```
+
 ## Project API
 
 The `/api/projects` endpoints provide basic CRUD operations. When the `CONNECTION_STRING` environment variable is set, projects are stored in MongoDB. Without it, an in-memory sample list is used.
