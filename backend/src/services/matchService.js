@@ -148,6 +148,8 @@ export function matchItems(inputItems, priceItems) {
 
 export function matchFromFiles(priceFilePath, inputBuffer) {
   const priceItems = loadPriceList(priceFilePath);
+  console.log('Price list items loaded:', priceItems.length);
   const inputItems = parseInputBuffer(inputBuffer);
+  console.log('Input items parsed:', inputItems.length);
   return matchItems(inputItems, priceItems);
 }
