@@ -67,6 +67,12 @@ Run it with:
 node backend/scripts/matchExcel.js frontend/MJD-PRICELIST.xlsx frontend/Input.xlsx
 ```
 
+### Web Interface
+
+Run the frontend with Vite and open `/price-match` to upload an Excel file for
+matching. Each row shows the best matched item from the price list along with
+its calculated rate and a confidence score.
+
 ### Running tests
 
 Execute the backend unit tests with:
