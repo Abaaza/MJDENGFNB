@@ -55,3 +55,22 @@ Several sample files are available in `backend/pricing` for local testing:
 The file `backend/src/sampleUsers.js` provides a few demo login accounts when no database is configured. Their passwords are `password123`, `secret456` and `admin`.
 
 Set `RATE_FILE` to the path of `sample_prices.csv` to price the sample BoQ.
+
+## Price Matching
+
+The `matchExcel.js` script compares an input spreadsheet against a price list and
+prints the best match for each item along with a confidence score and rates.
+
+Run it with:
+
+```bash
+node backend/scripts/matchExcel.js frontend/MJD-PRICELIST.xlsx frontend/Input.xlsx
+```
+
+### Running tests
+
+Execute the backend unit tests with:
+
+```bash
+npm test --prefix backend
+```
