@@ -6,6 +6,7 @@ import ProjectOverview from './pages/ProjectOverview';
 import ProjectDocuments from './pages/ProjectDocuments';
 import ProjectBoq from './pages/ProjectBoq';
 import NewProject from './pages/NewProject';
+import PriceMatch from './pages/PriceMatch';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import { useAuth } from './hooks/useAuth';
@@ -23,6 +24,7 @@ function AuthedApp() {
             <Route path="/projects/:id" element={<ProjectOverview />} />
             <Route path="/projects/:id/documents" element={<ProjectDocuments />} />
             <Route path="/projects/:id/boq" element={<ProjectBoq />} />
+            <Route path="/price-match" element={<PriceMatch />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

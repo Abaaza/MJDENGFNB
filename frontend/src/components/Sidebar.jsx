@@ -10,6 +10,7 @@ export default function Sidebar() {
   const links = [
     { name: 'Projects', to: '/' },
     { name: 'New Project', to: '/new-project', icon: PlusIcon },
+    { name: 'Price Match', to: '/price-match' },
   ];
 
   return (
