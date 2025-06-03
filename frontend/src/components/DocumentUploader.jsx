@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 export default function DocumentUploader({ projectId }) {
   const [files, setFiles] = useState([]);
 
