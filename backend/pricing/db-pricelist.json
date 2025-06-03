@@ -1,0 +1,324 @@
+[
+  {
+    "code": "3568",
+    "ref": "A",
+    "description": "Existing Eton IT cable",
+    "unit": "m",
+    "rate": 20
+  },
+  {
+    "code": "3569",
+    "ref": "B",
+    "description": "good",
+    "unit": "Nr",
+    "rate": 150
+  },
+  {
+    "code": "3570",
+    "ref": "C",
+    "description": "Existing street light service",
+    "unit": "m",
+    "rate": 20
+  },
+  {
+    "code": "3571",
+    "ref": "D",
+    "description": "Extra over for removing street light",
+    "unit": "Nr",
+    "rate": 150
+  },
+  {
+    "code": "3502",
+    "ref": "E",
+    "description": "backfilling with selected material; compacted filling",
+    "unit": "m",
+    "rate": 28.37
+  },
+  {
+    "code": "3503",
+    "ref": "F",
+    "description": "filling",
+    "unit": "m",
+    "rate": 39.73
+  },
+  {
+    "code": "3504",
+    "ref": "G",
+    "description": "filling",
+    "unit": "m",
+    "rate": 61.01
+  },
+  {
+    "code": "3551",
+    "ref": "H",
+    "description": "filling",
+    "unit": "m",
+    "rate": 72.44
+  },
+  {
+    "code": "3505",
+    "ref": "I",
+    "description": "filling",
+    "unit": "m",
+    "rate": 84.55
+  },
+  {
+    "code": "3567",
+    "ref": "J",
+    "description": "Excavating in close proximity to existing live services",
+    "unit": "m",
+    "rate": 24.55
+  },
+  {
+    "code": "3510",
+    "ref": "K",
+    "description": "Generally",
+    "unit": "Item",
+    "rate": 500
+  },
+  {
+    "code": "3553",
+    "ref": "A",
+    "description": "size",
+    "unit": "m",
+    "rate": 29.94
+  },
+  {
+    "code": "3552",
+    "ref": "B",
+    "description": "size within existing substructures",
+    "unit": "m",
+    "rate": 41.33
+  },
+  {
+    "code": "3511",
+    "ref": "C",
+    "description": "size",
+    "unit": "m",
+    "rate": 29.94
+  },
+  {
+    "code": "3512",
+    "ref": "D",
+    "description": "size",
+    "unit": "m",
+    "rate": 32.44
+  },
+  {
+    "code": "3513",
+    "ref": "E",
+    "description": "size",
+    "unit": "m",
+    "rate": 36.77
+  },
+  {
+    "code": "3554",
+    "ref": "F",
+    "description": "90 nominal size; in trenches",
+    "unit": "m",
+    "rate": 8.49
+  },
+  {
+    "code": "3555",
+    "ref": "G",
+    "description": "125 nominal size; in trenches",
+    "unit": "m",
+    "rate": 13.75
+  },
+  {
+    "code": "3519",
+    "ref": "H",
+    "description": "150 nominal size; in trenches",
+    "unit": "m",
+    "rate": 18.27
+  },
+  {
+    "code": "3520",
+    "ref": "I",
+    "description": "Bends; 125 duct",
+    "unit": "Nr",
+    "rate": 21.54
+  },
+  {
+    "code": "3556",
+    "ref": "J",
+    "description": "Bends; 90 duct",
+    "unit": "Nr",
+    "rate": 17.98
+  },
+  {
+    "code": "3557",
+    "ref": "K",
+    "description": "Bends; 150 duct",
+    "unit": "Nr",
+    "rate": 38.64
+  },
+  {
+    "code": "3521",
+    "ref": "L",
+    "description": "100 wide; five special colours for differing services",
+    "unit": "m",
+    "rate": 0.54
+  },
+  {
+    "code": "3522",
+    "ref": "M",
+    "description": "Generally",
+    "unit": "m",
+    "rate": 0.54
+  },
+  {
+    "code": "3524",
+    "ref": "A",
+    "description": "ESC2-CDL-ZZ-XX-DR-E-40001 Rev P03",
+    "unit": "Nr",
+    "rate": 1614.55
+  },
+  {
+    "code": "3559",
+    "ref": "B",
+    "description": "Extra over for building over existing live services",
+    "unit": "Nr",
+    "rate": 250
+  },
+  {
+    "code": "3558",
+    "ref": "C",
+    "description": "ESC2-CDL-ZZ-XX-DR-E-40001 Rev P03",
+    "unit": "Nr",
+    "rate": 1824.55
+  },
+  {
+    "code": "3523",
+    "ref": "D",
+    "description": "Generally",
+    "unit": "Nr",
+    "rate": 250
+  },
+  {
+    "code": "3565",
+    "ref": "E",
+    "description": "Existing district heating",
+    "unit": "m",
+    "rate": 9.5
+  },
+  {
+    "code": "3564",
+    "ref": "F",
+    "description": "Existing gas main",
+    "unit": "m",
+    "rate": 9.5
+  },
+  {
+    "code": "3563",
+    "ref": "G",
+    "description": "Existing water main",
+    "unit": "m",
+    "rate": 9.5
+  },
+  {
+    "code": "3527",
+    "ref": "H",
+    "description": "material; compacting filling (District heating F&R 65",
+    "unit": "m",
+    "rate": 28.37
+  },
+  {
+    "code": "3560",
+    "ref": "I",
+    "description": "material; compacting filling (GSHP)",
+    "unit": "m",
+    "rate": 28.37
+  },
+  {
+    "code": "3561",
+    "ref": "J",
+    "description": "material; compacting filling (Water main)",
+    "unit": "m",
+    "rate": 28.37
+  },
+  {
+    "code": "3562",
+    "ref": "A",
+    "description": "50 LTHWR, 50 LTHWF)",
+    "unit": "m",
+    "rate": 79.92
+  },
+  {
+    "code": "3566",
+    "ref": "B",
+    "description": "Excavating in close proximity to existing live services",
+    "unit": "m",
+    "rate": 24.55
+  },
+  {
+    "code": "3529",
+    "ref": "C",
+    "description": "Surface water",
+    "unit": "Item",
+    "rate": 500
+  },
+  {
+    "code": "3530",
+    "ref": "D",
+    "description": "nominal size",
+    "unit": "m",
+    "rate": 36.77
+  },
+  {
+    "code": "3533",
+    "ref": "E",
+    "description": "nominal size",
+    "unit": "m",
+    "rate": 33.7
+  },
+  {
+    "code": "3534",
+    "ref": "F",
+    "description": "sub-contractor)",
+    "unit": "m",
+    "rate": 34.22
+  },
+  {
+    "code": "3535",
+    "ref": "G",
+    "description": "Bends",
+    "unit": "Nr",
+    "rate": 100
+  },
+  {
+    "code": "3536",
+    "ref": "H",
+    "description": "Branch connection to existing live mains",
+    "unit": "Nr",
+    "rate": 100
+  },
+  {
+    "code": "3543",
+    "ref": "I",
+    "description": "assumed)",
+    "unit": "m",
+    "rate": 34.22
+  },
+  {
+    "code": "3544",
+    "ref": "J",
+    "description": "Bends",
+    "unit": "Nr",
+    "rate": 100
+  },
+  {
+    "code": "3547",
+    "ref": "K",
+    "description": "50 wide",
+    "unit": "m",
+    "rate": 0.54
+  },
+  {
+    "code": "3550",
+    "ref": "A",
+    "description": "Generally; concrete and masonry; complete",
+    "unit": "Nr",
+    "rate": 144.38
+  }
+]
