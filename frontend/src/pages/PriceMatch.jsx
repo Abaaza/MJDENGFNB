@@ -8,15 +8,19 @@ export default function PriceMatch() {
   async function handleFile(e) {
     const file = e.target.files[0];
     if (!file) return;
+    console.log('Uploading file', file.name, file.size);
     const fd = new FormData();
     fd.append('file', file);
     try {
       const res = await fetch(`${API_URL}/api/match`, { method: 'POST', body: fd });
+      console.log('Match response status', res.status);
       if (!res.ok) throw new Error('Match failed');
       const data = await res.json();
+      console.log('Matched rows', data.length);
       setRows(data);
       setError('');
     } catch (err) {
+      console.error('Price match error', err);
       setError(err.message);
       setRows([]);
     }
