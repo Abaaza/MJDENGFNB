@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict';
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { matchFromFiles } from '../src/services/matchService.js';
 
-const pricePath = '../frontend/MJD-PRICELIST.xlsx';
-const inputBuf = fs.readFileSync('../frontend/Input.xlsx');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const pricePath = path.resolve(__dirname, '../../frontend/MJD-PRICELIST.xlsx');
+const inputBuf = fs.readFileSync(path.resolve(__dirname, '../../frontend/Input.xlsx'));
 
 const results = matchFromFiles(pricePath, inputBuf);
 
