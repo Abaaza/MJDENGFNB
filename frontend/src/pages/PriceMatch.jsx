@@ -28,11 +28,19 @@ export default function PriceMatch() {
       });
       if (!res.ok) throw new Error('Match failed');
       const data = await res.json();
-      const formatted = data.map((r) => ({
-        ...r,
-        selected: 0,
-        qty: r.quantity || 0,
-      }));
+      const formatted = data.map((r) => {
+        const first = r.matches[0] || {};
+        return {
+          ...r,
+          selected: 0,
+          qty: r.quantity || 0,
+          code: first.code || '',
+          matchDesc: first.description || '',
+          unit: first.unit || '',
+          rate: first.unitRate ?? '',
+          confidence: first.confidence ?? '',
+        };
+      });
       setRows(formatted);
       setError('');
     } catch (err) {
@@ -49,7 +57,19 @@ export default function PriceMatch() {
 
   function updateSelection(i, idx) {
     setRows((rows) =>
-      rows.map((r, j) => (j === i ? { ...r, selected: idx } : r))
+      rows.map((r, j) => {
+        if (j !== i) return r;
+        const m = r.matches[idx] || {};
+        return {
+          ...r,
+          selected: idx,
+          code: m.code || '',
+          matchDesc: m.description || '',
+          unit: m.unit || '',
+          rate: m.unitRate ?? '',
+          confidence: m.confidence ?? '',
+        };
+      })
     );
   }
 
@@ -59,26 +79,33 @@ export default function PriceMatch() {
     );
   }
 
+  function updateField(i, field, val) {
+    setRows((rows) =>
+      rows.map((r, j) => (j === i ? { ...r, [field]: val } : r))
+    );
+  }
+
+  function deleteRow(i) {
+    setRows((rows) => rows.filter((_, j) => j !== i));
+  }
+
   function rowTotal(r) {
-    const m = r.matches[r.selected] || {};
     const q = parseFloat(r.qty) || 0;
-    const rate = m.unitRate != null ? m.unitRate : 0;
+    const rate = parseFloat(r.rate) || 0;
     return q * rate;
   }
 
   function buildData() {
-    return rows.map((r) => {
-      const m = r.matches[r.selected] || {};
-      return {
-        Description: r.inputDescription,
-        Code: m.code,
-        Match: m.description,
-        Unit: m.unit,
-        Qty: r.qty,
-        Rate: m.unitRate,
-        Total: rowTotal(r).toFixed(2),
-      };
-    });
+    return rows.map((r) => ({
+      Description: r.inputDescription,
+      Code: r.code,
+      Match: r.matchDesc,
+      Unit: r.unit,
+      Qty: r.qty,
+      Rate: r.rate,
+      Confidence: r.confidence,
+      Total: rowTotal(r).toFixed(2),
+    }));
   }
 
   function exportExcel() {
@@ -131,7 +158,8 @@ export default function PriceMatch() {
                 <th className="px-2 py-1 border-r text-left">Qty</th>
                 <th className="px-2 py-1 border-r text-left">Rate</th>
                 <th className="px-2 py-1 border-r text-left">Total</th>
-                <th className="px-2 py-1 text-left">Conf.</th>
+                <th className="px-2 py-1 border-r text-left">Conf.</th>
+                <th className="px-2 py-1 text-left">Del</th>
               </tr>
             </thead>
             <tbody>
@@ -139,9 +167,16 @@ export default function PriceMatch() {
                 const m = r.matches[r.selected] || {};
                 return (
                   <tr key={i} className="hover:bg-gray-50">
-                    <td className="px-2 py-1 border-t border-r">{r.inputDescription}</td>
                     <td className="px-2 py-1 border-t border-r">
-                      <div className="space-y-1">
+                      <input
+                        type="text"
+                        value={r.inputDescription}
+                        onChange={(e) => updateField(i, 'inputDescription', e.target.value)}
+                        className="w-40 border rounded px-1"
+                      />
+                    </td>
+                    <td className="px-2 py-1 border-t border-r">
+                      <div className="space-y-1 mb-1">
                         {r.matches.map((m, idx) => (
                           <label key={idx} className="flex items-center gap-1">
                             <input
@@ -155,8 +190,27 @@ export default function PriceMatch() {
                           </label>
                         ))}
                       </div>
+                      <input
+                        type="text"
+                        value={r.matchDesc}
+                        onChange={(e) => updateField(i, 'matchDesc', e.target.value)}
+                        className="w-40 border rounded px-1 mt-1"
+                      />
+                      <input
+                        type="text"
+                        value={r.code}
+                        onChange={(e) => updateField(i, 'code', e.target.value)}
+                        className="w-32 border rounded px-1 mt-1"
+                      />
                     </td>
-                    <td className="px-2 py-1 border-t border-r">{m.unit || ''}</td>
+                    <td className="px-2 py-1 border-t border-r">
+                      <input
+                        type="text"
+                        value={r.unit}
+                        onChange={(e) => updateField(i, 'unit', e.target.value)}
+                        className="w-16 border rounded px-1"
+                      />
+                    </td>
                     <td className="px-2 py-1 border-t border-r">
                       <input
                         type="number"
@@ -166,17 +220,36 @@ export default function PriceMatch() {
                       />
                     </td>
                     <td className="px-2 py-1 border-t border-r">
-                      {m.unitRate != null ? m.unitRate : ''}
+                      <input
+                        type="number"
+                        value={r.rate}
+                        onChange={(e) => updateField(i, 'rate', e.target.value)}
+                        className="w-20 border rounded px-1"
+                      />
                     </td>
                     <td className="px-2 py-1 border-t border-r">{rowTotal(r).toFixed(2)}</td>
-                    <td className="px-2 py-1 border-t">{m.confidence}</td>
+                    <td className="px-2 py-1 border-t border-r">
+                      <input
+                        type="number"
+                        value={r.confidence}
+                        onChange={(e) => updateField(i, 'confidence', e.target.value)}
+                        className="w-20 border rounded px-1"
+                      />
+                    </td>
+                    <td className="px-2 py-1 border-t">
+                      <button
+                        onClick={() => deleteRow(i)}
+                        className="text-red-600">
+                        ×
+                      </button>
+                    </td>
                   </tr>
                 );
               })}
             </tbody>
             <tfoot>
               <tr>
-                <td colSpan="5" className="px-2 py-1 text-right font-semibold border-t">
+                <td colSpan="6" className="px-2 py-1 text-right font-semibold border-t">
                   Total
                 </td>
                 <td className="px-2 py-1 border-t border-r font-semibold">
