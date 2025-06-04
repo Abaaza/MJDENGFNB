@@ -13,5 +13,5 @@ const results = matchFromFiles(pricePath, inputBuf);
 assert.ok(Array.isArray(results));
 assert.ok(results.length > 0);
 assert.ok(results[0].hasOwnProperty('inputDescription'));
-assert.ok(results[0].hasOwnProperty('confidence'));
+assert.ok(Array.isArray(results[0].matches));
 
