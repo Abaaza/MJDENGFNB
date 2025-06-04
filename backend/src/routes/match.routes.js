@@ -9,7 +9,13 @@ const upload = multer({ storage: multer.memoryStorage() });
 const router = Router();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PRICE_FILE = path.resolve(__dirname, '../../frontend/MJD-PRICELIST.xlsx');
+// Resolve to the repo root's frontend price list file
+// Current file is located at backend/src/routes, so go up three levels
+// to reach the repo root before appending the frontend path
+const PRICE_FILE = path.resolve(
+  __dirname,
+  '../../../frontend/MJD-PRICELIST.xlsx'
+);
 
 router.post('/', upload.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
