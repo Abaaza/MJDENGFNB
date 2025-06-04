@@ -58,8 +58,10 @@ Set `RATE_FILE` to the path of `sample_prices.csv` to price the sample BoQ.
 
 ## Price Matching
 
-The `matchExcel.js` script compares an input spreadsheet against a price list and
-prints the best match for each item along with a confidence score and rates.
+The `matchExcel.js` script compares an input spreadsheet against a price list.
+Only price list rows that contain a unit rate are considered, ensuring the
+matches always include pricing information. The output lists the best matches for
+each item together with a confidence score and the matched unit rate.
 
 Run it with:
 
@@ -71,7 +73,8 @@ node backend/scripts/matchExcel.js frontend/MJD-PRICELIST.xlsx frontend/Input.xl
 
 Run the frontend with Vite and open `/price-match` to upload an Excel file for
 matching. Each row shows the best matched item from the price list along with
-its calculated rate and a confidence score.
+its calculated unit rate and a confidence score. Price list entries without a
+rate are ignored during matching.
 
 ### Running tests
 
