@@ -101,9 +101,14 @@ export default function PriceMatch() {
   const grandTotal = rows.reduce((sum, r) => sum + rowTotal(r), 0);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 p-4">
       <h1 className="text-2xl font-semibold text-brand-dark mb-2">Price Match</h1>
-      <input type="file" accept=".xls,.xlsx" onChange={handleFile} />
+      <input
+        type="file"
+        accept=".xls,.xlsx"
+        onChange={handleFile}
+        className="border p-1 rounded"
+      />
       {loading && (
         <div className="w-full bg-gray-200 h-2 rounded overflow-hidden mb-1">
           <div
@@ -133,20 +138,23 @@ export default function PriceMatch() {
               {rows.map((r, i) => {
                 const m = r.matches[r.selected] || {};
                 return (
-                  <tr key={i}>
+                  <tr key={i} className="hover:bg-gray-50">
                     <td className="px-2 py-1 border-t border-r">{r.inputDescription}</td>
                     <td className="px-2 py-1 border-t border-r">
-                      <select
-                        value={r.selected}
-                        onChange={(e) => updateSelection(i, Number(e.target.value))}
-                        className="border rounded px-1"
-                      >
+                      <div className="space-y-1">
                         {r.matches.map((m, idx) => (
-                          <option key={idx} value={idx}>
-                            {m.code} - {m.description}
-                          </option>
+                          <label key={idx} className="flex items-center gap-1">
+                            <input
+                              type="radio"
+                              name={`match-${i}`}
+                              checked={r.selected === idx}
+                              onChange={() => updateSelection(i, idx)}
+                              className="text-brand-accent"
+                            />
+                            <span>{m.code} - {m.description}</span>
+                          </label>
                         ))}
-                      </select>
+                      </div>
                     </td>
                     <td className="px-2 py-1 border-t border-r">{m.unit || ''}</td>
                     <td className="px-2 py-1 border-t border-r">

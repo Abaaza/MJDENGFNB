@@ -25,6 +25,11 @@ const synonymMap = {
   providing: 'provide'
 };
 
+const STOP_WORDS = new Set([
+  'the','and','of','to','in','for','on','at','by','from','with',
+  'a','an','be','is','are','as','it','its','into','or'
+]);
+
 function applySynonyms(text) {
   return text.split(' ').map(w => {
     const mapped = synonymMap[w];
@@ -36,6 +41,13 @@ function applySynonyms(text) {
   }).join(' ');
 }
 
+function removeStopWords(text) {
+  return text
+    .split(' ')
+    .filter(w => w && !STOP_WORDS.has(w))
+    .join(' ');
+}
+
 function preprocess(text) {
   const cleaned = String(text || '')
     .toLowerCase()
@@ -44,7 +56,8 @@ function preprocess(text) {
     .replace(/\s+(mm|cm|m|inch|in|ft)\b/g, ' ') // drop units
     .replace(/\s+/g, ' ')
     .trim();
-  return applySynonyms(cleaned);
+  const normalized = applySynonyms(cleaned);
+  return removeStopWords(normalized);
 }
 
 function levenshtein(a, b) {
@@ -92,6 +105,33 @@ function tokenSetRatio(a, b) {
   const ratio1 = ratio(sortedInter + ' ' + aLeft, sortedInter + ' ' + bLeft);
   const ratio2 = ratio(sortedInter, sortedInter + ' ' + aLeft + ' ' + bLeft);
   return Math.max(ratio1, ratio2);
+}
+
+function wordFreq(text) {
+  const freq = Object.create(null);
+  for (const w of text.split(' ')) {
+    if (!w) continue;
+    freq[w] = (freq[w] || 0) + 1;
+  }
+  return freq;
+}
+
+function cosineSim(a, b) {
+  const fa = wordFreq(a);
+  const fb = wordFreq(b);
+  let dot = 0;
+  let normA = 0;
+  let normB = 0;
+  for (const w in fa) {
+    const v = fa[w];
+    normA += v * v;
+  }
+  for (const w in fb) {
+    const v = fb[w];
+    normB += v * v;
+    if (fa[w]) dot += v * fa[w];
+  }
+  return dot / (Math.sqrt(normA) * Math.sqrt(normB) || 1);
 }
 
 function detectHeader(rows) {
@@ -163,9 +203,11 @@ export function matchItems(inputItems, priceItems, limit = 4) {
   return inputItems.map(item => {
     const scored = [];
     for (const p of priceItems) {
-      const base = 0.6 * ratio(item.descClean, p.descClean) +
-                   0.4 * jaccard(item.descClean, p.descClean);
-      const s = Math.max(base, tokenSetRatio(item.descClean, p.descClean));
+      const r = ratio(item.descClean, p.descClean);
+      const j = jaccard(item.descClean, p.descClean);
+      const c = cosineSim(item.descClean, p.descClean);
+      const t = tokenSetRatio(item.descClean, p.descClean);
+      const s = 0.25 * r + 0.25 * j + 0.3 * c + 0.2 * t;
       scored.push({ item: p, score: s });
     }
     scored.sort((a, b) => b.score - a.score);
