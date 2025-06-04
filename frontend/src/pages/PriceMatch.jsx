@@ -1,4 +1,7 @@
 import { useState, useRef } from 'react';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
 export default function PriceMatch() {
@@ -63,6 +66,38 @@ export default function PriceMatch() {
     return q * rate;
   }
 
+  function buildData() {
+    return rows.map((r) => {
+      const m = r.matches[r.selected] || {};
+      return {
+        Description: r.inputDescription,
+        Code: m.code,
+        Match: m.description,
+        Unit: m.unit,
+        Qty: r.qty,
+        Rate: m.unitRate,
+        Total: rowTotal(r).toFixed(2),
+      };
+    });
+  }
+
+  function exportExcel() {
+    const data = buildData();
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Results');
+    XLSX.writeFile(wb, 'price_match.xlsx');
+  }
+
+  function exportPdf() {
+    const data = buildData();
+    const headers = Object.keys(data[0] || {});
+    const body = data.map((d) => headers.map((h) => d[h]));
+    const doc = new jsPDF();
+    autoTable(doc, { head: [headers], body });
+    doc.save('price_match.pdf');
+  }
+
   const grandTotal = rows.reduce((sum, r) => sum + rowTotal(r), 0);
 
   return (
@@ -80,6 +115,7 @@ export default function PriceMatch() {
       {loading && <p className="text-sm">Loading…</p>}
       {error && <p className="text-red-600 text-sm">{error}</p>}
       {rows.length > 0 && (
+        <>
         <div className="overflow-x-auto border rounded text-xs">
           <table className="min-w-full">
             <thead className="bg-gray-50">
@@ -143,6 +179,11 @@ export default function PriceMatch() {
             </tfoot>
           </table>
         </div>
+        <div className="flex gap-2 text-xs mt-2">
+          <button onClick={exportExcel} className="px-3 py-1 bg-brand-dark text-white rounded">Excel</button>
+          <button onClick={exportPdf} className="px-3 py-1 bg-brand-dark text-white rounded">PDF</button>
+        </div>
+        </>
       )}
     </div>
   );
