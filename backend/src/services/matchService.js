@@ -76,6 +76,7 @@ function parseRows(rows, startIdx) {
   const descIdx = header.findIndex(h => /(description|desc|details)/i.test(h));
   const qtyIdx = header.findIndex(h => /(qty|quantity|amount)/i.test(h));
   const rateIdx = header.findIndex(h => /(rate|price|unit\s*price|unit\s*rate)/i.test(h));
+  const unitIdx = header.findIndex(h => /(unit|uom)/i.test(h));
 
   const items = [];
   for (let i = startIdx + 1; i < rows.length; i++) {
@@ -86,11 +87,13 @@ function parseRows(rows, startIdx) {
     const code = codeIdx !== -1 ? r[codeIdx] : '';
     const qty = qtyIdx !== -1 ? Number(r[qtyIdx] || 0) : 0;
     const rate = rateIdx !== -1 && r[rateIdx] !== '' ? Number(r[rateIdx]) : null;
+    const unit = unitIdx !== -1 ? String(r[unitIdx] || '') : '';
     items.push({
       code: String(code || ''),
       description: String(desc || ''),
       qty,
       rate,
+      unit,
       descClean: preprocess(desc)
     });
   }
@@ -119,29 +122,27 @@ export function parseInputBuffer(buffer) {
   return parseRows(rows, hdr.index);
 }
 
-export function matchItems(inputItems, priceItems) {
+export function matchItems(inputItems, priceItems, limit = 4) {
   return inputItems.map(item => {
-    let best = null;
-    let bestScore = 0;
+    const scored = [];
     for (const p of priceItems) {
       const base = 0.6 * ratio(item.descClean, p.descClean) +
                    0.4 * jaccard(item.descClean, p.descClean);
       const s = Math.max(base, tokenSetRatio(item.descClean, p.descClean));
-      if (s > bestScore) {
-        bestScore = s;
-        best = p;
-      }
+      scored.push({ item: p, score: s });
     }
-    const rate = best && best.rate != null ? best.rate : null;
-    const total = rate != null ? rate * item.qty : null;
+    scored.sort((a, b) => b.score - a.score);
+    const matches = scored.slice(0, limit).map(m => ({
+      code: m.item.code,
+      description: m.item.description,
+      unit: m.item.unit,
+      unitRate: m.item.rate,
+      confidence: Math.round(m.score * 1000) / 1000
+    }));
     return {
       inputDescription: item.description,
-      matchedCode: best ? best.code : '',
-      matchedDescription: best ? best.description : '',
       quantity: item.qty,
-      unitRate: rate,
-      total,
-      confidence: Math.round(bestScore * 1000) / 1000
+      matches
     };
   });
 }
@@ -151,5 +152,5 @@ export function matchFromFiles(priceFilePath, inputBuffer) {
   console.log('Price list items loaded:', priceItems.length);
   const inputItems = parseInputBuffer(inputBuffer);
   console.log('Input items parsed:', inputItems.length);
-  return matchItems(inputItems, priceItems);
+  return matchItems(inputItems, priceItems, 4);
 }

@@ -13,8 +13,11 @@ const proc = spawnSync('node', [
 ], { encoding: 'utf8', cwd });
 
 assert.strictEqual(proc.status, 0);
-const data = JSON.parse(proc.stdout);
+const lines = proc.stdout.trim().split('\n');
+const start = lines.findIndex(l => l.trim().startsWith('['));
+const jsonStr = lines.slice(start).join('\n');
+const data = JSON.parse(jsonStr);
 assert.ok(Array.isArray(data));
 assert.ok(data.length > 0);
-assert.ok(data[0].hasOwnProperty('confidence'));
+assert.ok(Array.isArray(data[0].matches));
 
