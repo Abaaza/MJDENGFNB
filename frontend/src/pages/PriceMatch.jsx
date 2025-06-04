@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
 export default function PriceMatch() {
   const [rows, setRows] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const timerRef = useRef(null);
 
   async function handleFile(e) {
     const file = e.target.files[0];
@@ -12,6 +14,10 @@ export default function PriceMatch() {
     const fd = new FormData();
     fd.append('file', file);
     setLoading(true);
+    setProgress(0);
+    timerRef.current = setInterval(() => {
+      setProgress((p) => (p < 90 ? p + 5 : 90));
+    }, 500);
     try {
       const res = await fetch(`${API_URL}/api/match`, {
         method: 'POST',
@@ -31,7 +37,10 @@ export default function PriceMatch() {
       setError(err.message);
       setRows([]);
     } finally {
+      clearInterval(timerRef.current);
+      setProgress(100);
       setLoading(false);
+      setTimeout(() => setProgress(0), 500);
     }
   }
 
@@ -60,6 +69,14 @@ export default function PriceMatch() {
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold text-brand-dark mb-2">Price Match</h1>
       <input type="file" accept=".xls,.xlsx" onChange={handleFile} />
+      {loading && (
+        <div className="w-full bg-gray-200 h-2 rounded overflow-hidden mb-1">
+          <div
+            className="bg-blue-500 h-full transition-all"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      )}
       {loading && <p className="text-sm">Loading…</p>}
       {error && <p className="text-red-600 text-sm">{error}</p>}
       {rows.length > 0 && (
