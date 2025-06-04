@@ -1,13 +1,50 @@
 import XLSX from 'xlsx';
 
+const synonymMap = {
+  bricks: 'brick',
+  brickwork: 'brick',
+  blocks: 'brick',
+  blockwork: 'brick',
+  cement: 'concrete',
+  concrete: 'concrete',
+  footing: 'foundation',
+  footings: 'foundation',
+  excavation: 'excavate',
+  excavations: 'excavate',
+  excavate: 'excavate',
+  dig: 'excavate',
+  installation: 'install',
+  installing: 'install',
+  installed: 'install',
+  demolition: 'demolish',
+  demolish: 'demolish',
+  demolishing: 'demolish',
+  remove: 'demolish',
+  supply: 'provide',
+  supplies: 'provide',
+  providing: 'provide'
+};
+
+function applySynonyms(text) {
+  return text.split(' ').map(w => {
+    const mapped = synonymMap[w];
+    if (mapped) return mapped;
+    if (w.length > 3) {
+      return w.replace(/(ings|ing|ed|es|s)$/u, '');
+    }
+    return w;
+  }).join(' ');
+}
+
 function preprocess(text) {
-  return String(text || '')
+  const cleaned = String(text || '')
     .toLowerCase()
     .replace(/[^a-z0-9\s]/g, ' ')
     .replace(/\b\d+(?:\.\d+)?\b/g, ' ') // drop standalone numbers
     .replace(/\s+(mm|cm|m|inch|in|ft)\b/g, ' ') // drop units
     .replace(/\s+/g, ' ')
     .trim();
+  return applySynonyms(cleaned);
 }
 
 function levenshtein(a, b) {
@@ -110,7 +147,7 @@ export function loadPriceList(path) {
     if (!hdr) continue;
     items.push(...parseRows(rows, hdr.index));
   }
-  return items;
+  return items.filter(it => it.rate !== null && it.rate !== undefined);
 }
 
 export function parseInputBuffer(buffer) {
