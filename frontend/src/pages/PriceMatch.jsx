@@ -29,9 +29,17 @@ export default function PriceMatch() {
       if (!res.ok) throw new Error('Match failed');
       const data = await res.json();
       const formatted = data.map((r) => {
-        const first = r.matches[0] || {};
+        const matches = (r.matches || []).filter(
+          (m) =>
+            m.unit &&
+            String(m.unit).trim() !== '' &&
+            m.unitRate !== null &&
+            m.unitRate !== undefined
+        );
+        const first = matches[0] || {};
         return {
           ...r,
+          matches,
           selected: 0,
           qty: r.quantity || 0,
           code: first.code || '',
@@ -168,11 +176,10 @@ export default function PriceMatch() {
                 return (
                   <tr key={i} className="hover:bg-gray-50">
                     <td className="px-2 py-1 border-t border-r">
-                      <input
-                        type="text"
+                      <textarea
+                        readOnly
                         value={r.inputDescription}
-                        onChange={(e) => updateField(i, 'inputDescription', e.target.value)}
-                        className="w-40 border rounded px-1"
+                        className="min-w-[20rem] border rounded px-1 text-xs"
                       />
                     </td>
                     <td className="px-2 py-1 border-t border-r">
@@ -190,11 +197,10 @@ export default function PriceMatch() {
                           </label>
                         ))}
                       </div>
-                      <input
-                        type="text"
+                      <textarea
+                        readOnly
                         value={r.matchDesc}
-                        onChange={(e) => updateField(i, 'matchDesc', e.target.value)}
-                        className="w-40 border rounded px-1 mt-1"
+                        className="min-w-[20rem] border rounded px-1 mt-1 text-xs"
                       />
                       <input
                         type="text"
