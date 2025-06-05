@@ -134,6 +134,47 @@ function cosineSim(a, b) {
   return dot / (Math.sqrt(normA) * Math.sqrt(normB) || 1);
 }
 
+function jaroWinkler(a, b) {
+  if (a === b) return 1;
+  const lenA = a.length;
+  const lenB = b.length;
+  if (!lenA || !lenB) return 0;
+  const matchDist = Math.floor(Math.max(lenA, lenB) / 2) - 1;
+  const aMatches = new Array(lenA).fill(false);
+  const bMatches = new Array(lenB).fill(false);
+  let matches = 0;
+  for (let i = 0; i < lenA; i++) {
+    const start = Math.max(0, i - matchDist);
+    const end = Math.min(i + matchDist + 1, lenB);
+    for (let j = start; j < end; j++) {
+      if (bMatches[j]) continue;
+      if (a[i] === b[j]) {
+        aMatches[i] = bMatches[j] = true;
+        matches++;
+        break;
+      }
+    }
+  }
+  if (!matches) return 0;
+  let transpositions = 0;
+  let k = 0;
+  for (let i = 0; i < lenA; i++) {
+    if (!aMatches[i]) continue;
+    while (!bMatches[k]) k++;
+    if (a[i] !== b[k]) transpositions++;
+    k++;
+  }
+  transpositions /= 2;
+  const jaro =
+    (matches / lenA + matches / lenB + (matches - transpositions) / matches) / 3;
+  let prefix = 0;
+  for (let i = 0; i < Math.min(4, lenA, lenB); i++) {
+    if (a[i] === b[i]) prefix++;
+    else break;
+  }
+  return jaro + prefix * 0.1 * (1 - jaro);
+}
+
 function detectHeader(rows) {
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i].map(v => String(v).trim());
@@ -209,11 +250,10 @@ export function matchItems(inputItems, priceItems, limit = 4) {
   return inputItems.map(item => {
     const scored = [];
     for (const p of priceItems) {
-      const r = ratio(item.descClean, p.descClean);
-      const j = jaccard(item.descClean, p.descClean);
+      const jw = jaroWinkler(item.descClean, p.descClean);
       const c = cosineSim(item.descClean, p.descClean);
       const t = tokenSetRatio(item.descClean, p.descClean);
-      const s = 0.25 * r + 0.25 * j + 0.3 * c + 0.2 * t;
+      const s = 0.4 * jw + 0.4 * c + 0.2 * t;
       scored.push({ item: p, score: s });
     }
     scored.sort((a, b) => b.score - a.score);
