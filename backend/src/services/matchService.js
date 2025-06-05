@@ -187,7 +187,13 @@ export function loadPriceList(path) {
     if (!hdr) continue;
     items.push(...parseRows(rows, hdr.index));
   }
-  return items.filter(it => it.rate !== null && it.rate !== undefined);
+  return items.filter(
+    it =>
+      it.rate !== null &&
+      it.rate !== undefined &&
+      it.unit &&
+      String(it.unit).trim() !== ''
+  );
 }
 
 export function parseInputBuffer(buffer) {
