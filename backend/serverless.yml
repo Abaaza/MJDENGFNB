@@ -3,7 +3,7 @@ frameworkVersion: "3"
 
 provider:
   name: aws
-  runtime: nodejs18.x
+  runtime: nodejs22.x
   region: me-south-1
   environment:
     CONNECTION_STRING: ${env:CONNECTION_STRING, ''}
@@ -23,7 +23,6 @@ functions:
           method: ANY
 
 plugins:
-  - serverless-offline
   - serverless-dotenv-plugin
 
 package:

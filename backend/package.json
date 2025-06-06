@@ -28,10 +28,12 @@
   },
   "devDependencies": {
     "dotenv-cli": "^8.0.0",
-    "serverless": "^4.14.4",
-    "serverless-offline": "^14.4.0"
+    "serverless": "^4.14.4"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "engines": {
+    "node": ">=22"
+  }
 }
