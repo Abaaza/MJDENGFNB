@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 import { matchFromFiles } from '../src/services/matchService.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const pricePath = path.resolve(__dirname, '../../frontend/MJD-PRICELIST.xlsx');
+const pricePath = path.resolve(__dirname, '../MJD-PRICELIST.xlsx');
 const inputBuf = fs.readFileSync(path.resolve(__dirname, '../../frontend/Input.xlsx'));
 
 const results = matchFromFiles(pricePath, inputBuf);

@@ -8,7 +8,7 @@ const cwd = path.resolve(__dirname, '..');
 
 const proc = spawnSync('node', [
   'scripts/matchExcel.js',
-  '../frontend/MJD-PRICELIST.xlsx',
+  'MJD-PRICELIST.xlsx',
   '../frontend/Input.xlsx'
 ], { encoding: 'utf8', cwd });
 
