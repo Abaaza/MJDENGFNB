@@ -46,15 +46,10 @@ The frontend expects `VITE_API_URL` to point at the running backend. A sample `.
 
 ### Sample data
 
-Several sample files are available in `backend/pricing` for local testing:
-
-- `sample_boq.csv` – demo BoQ sheet with 10 items
-- `sample_prices.csv` – rate lookup used by the pricing engine
-- `sample_bluebeam.csv` – example BlueBeam measurements
-
+The master price list used by the pricing engine is provided in `backend/MJD-PRICELIST.xlsx`.
 The file `backend/src/sampleUsers.js` provides a few demo login accounts when no database is configured. Their passwords are `password123`, `secret456` and `admin`.
 
-Set `RATE_FILE` to the path of `sample_prices.csv` to price the sample BoQ.
+Set `RATE_FILE` to the path of `backend/MJD-PRICELIST.xlsx` to price uploaded BoQs.
 
 ## Price Matching
 
