@@ -13,11 +13,10 @@ import { useAuth } from './hooks/useAuth';
 
 function AuthedApp() {
   return (
-    <div className="flex">
+    <div className="flex flex-col min-h-screen bg-brand-light">
+      <TopBar />
       <Sidebar />
-      <div className="flex-1 bg-brand-light min-h-screen">
-        <TopBar />
-        <main className="p-8 space-y-6">
+      <main className="p-8 space-y-6 flex-1">
           <Routes>
             <Route index element={<Dashboard />} />
             <Route path="/new-project" element={<NewProject />} />
@@ -28,7 +27,6 @@ function AuthedApp() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
-      </div>
     </div>
   );
 }
