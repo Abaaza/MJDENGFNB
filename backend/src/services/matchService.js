@@ -247,6 +247,24 @@ export function parseInputBuffer(buffer) {
 }
 
 export function matchItems(inputItems, priceItems, limit = 4) {
+  function pickDiverse(sorted) {
+    const out = [];
+    for (const cand of sorted) {
+      const tooSimilar = out.some(m => jaccard(m.item.descClean, cand.item.descClean) > 0.8);
+      if (!tooSimilar) out.push(cand);
+      if (out.length >= limit) break;
+    }
+    if (out.length < limit) {
+      for (const cand of sorted) {
+        if (!out.includes(cand)) {
+          out.push(cand);
+          if (out.length >= limit) break;
+        }
+      }
+    }
+    return out;
+  }
+
   return inputItems.map(item => {
     const scored = [];
     for (const p of priceItems) {
@@ -257,7 +275,8 @@ export function matchItems(inputItems, priceItems, limit = 4) {
       scored.push({ item: p, score: s });
     }
     scored.sort((a, b) => b.score - a.score);
-    const matches = scored.slice(0, limit).map(m => ({
+    const diverse = pickDiverse(scored);
+    const matches = diverse.map(m => ({
       code: m.item.code,
       description: m.item.description,
       unit: m.item.unit,
