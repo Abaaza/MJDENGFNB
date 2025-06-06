@@ -8,7 +8,7 @@ provider:
   environment:
     CONNECTION_STRING: ${env:CONNECTION_STRING, ''}
     JWT_SECRET:        ${env:JWT_SECRET, ''}
-    JWT_REFRESH_SECRET:${env:JWT_REFRESH_SECRET, ''}
+    JWT_REFRESH_SECRET: ${env:JWT_REFRESH_SECRET, ''}
     RATE_FILE:         ${env:RATE_FILE, 'backend/MJD-PRICELIST.xlsx'}
 
   httpApi:
