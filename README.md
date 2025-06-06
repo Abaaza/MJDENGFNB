@@ -66,7 +66,7 @@ each item together with a confidence score and the matched unit rate.
 Run it with:
 
 ```bash
-node backend/scripts/matchExcel.js frontend/MJD-PRICELIST.xlsx frontend/Input.xlsx
+node backend/scripts/matchExcel.js backend/MJD-PRICELIST.xlsx frontend/Input.xlsx
 ```
 
 ### Web Interface
