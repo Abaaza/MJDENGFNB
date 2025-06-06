@@ -2,6 +2,10 @@
 
 This repository contains a sample backend and frontend for the estimating dashboard.
 
+## Node version
+
+The project now targets **Node.js 22**. Ensure you have Node 22 installed locally when running the backend or the scripts. The deployment configuration uses the same runtime.
+
 ## Batch Pricing
 
 The script `backend/scripts/batchPrice.js` processes one or more BoQ spreadsheets and writes priced Excel files alongside the originals. It relies on the `RATE_FILE` environment variable which should point to the master price list.

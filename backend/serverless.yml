@@ -3,7 +3,7 @@ frameworkVersion: "3"
 
 provider:
   name: aws
-  runtime: nodejs18.x
+  runtime: nodejs22.x
   region: me-south-1
   stage: ${opt:stage, 'dev'}
   environment:
@@ -28,7 +28,6 @@ functions:
           method: ANY
 
 plugins:
-  - serverless-offline
   - serverless-dotenv-plugin
 
 package:

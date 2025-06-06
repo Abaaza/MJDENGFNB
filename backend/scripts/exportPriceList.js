@@ -1,6 +1,9 @@
 import XLSX from 'xlsx';
 import fs from 'fs';
+<<<<<<< HEAD:backend/scripts/exportPriceList.cjs
 
+=======
+>>>>>>> b4874feb0bc217881d4ae06175177def7b297ab9:backend/scripts/exportPriceList.js
 
 const input = process.argv[2] || 'pricing/pricelist.xlsx';
 const sheet = process.argv[3] || 'SERVICES';
