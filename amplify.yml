@@ -7,10 +7,9 @@ frontend:
         - npm ci
     build:
       commands:
-        - cd frontend
-        - npm run build
+        - npm run build # NO cd here!
   artifacts:
-    baseDirectory: frontend/dist
+    baseDirectory: frontend/dist # or frontend/build, depending on your config
     files:
       - "**/*"
   cache:
