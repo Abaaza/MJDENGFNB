@@ -7,11 +7,9 @@ provider:
   region: me-south-1
   environment:
     CONNECTION_STRING: ${env:CONNECTION_STRING}
-    JWT_SECRET:        ${env:JWT_SECRET}
-    JWT_REFRESH_SECRET:${env:JWT_REFRESH_SECRET}
-    RATE_FILE:         ${env:RATE_FILE}
-
-
+    JWT_SECRET: ${env:JWT_SECRET}
+    JWT_REFRESH_SECRET: ${env:JWT_REFRESH_SECRET}
+    RATE_FILE: "${env:RATE_FILE, 'backend/pricing/sample_prices.csv'}"
 
   httpApi:
     cors: true
@@ -20,13 +18,14 @@ functions:
   api:
     handler: src/handler.handler
     events:
-      - httpApi:      # one Lambda handles every route
+      - httpApi:
           path: /{proxy+}
           method: ANY
 
 plugins:
-  - serverless-offline   # (dev convenience)
+  - serverless-offline
+  - serverless-dotenv-plugin
 
 package:
   patterns:
-    - '!node_modules/.cache/**'   #      exclude cache
+    - "!node_modules/.cache/**"

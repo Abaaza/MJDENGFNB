@@ -1,0 +1,92 @@
+{
+  "C:\\Users\\abaza\\tender-dashboard\\backend\\serverless.yml": {
+    "versionFramework": "4.17.0",
+    "servicePath": "C:\\Users\\abaza\\tender-dashboard\\backend\\serverless.yml",
+    "serviceConfigFileName": "serverless.yml",
+    "service": {
+      "service": "mjd-backend",
+      "frameworkVersion": "3",
+      "provider": {
+        "name": "aws",
+        "runtime": "nodejs18.x",
+        "region": "me-south-1",
+        "environment": {
+          "CONNECTION_STRING": "mongodb+srv://wallmasters:Aa13566964@wallmasters.f7fvy.mongodb.net/Wallmasters?retryWrites=true&w=majority",
+          "JWT_SECRET": "<REDACTED>",
+          "JWT_REFRESH_SECRET": "<REDACTED>",
+          "RATE_FILE": "backend/pricing/sample_prices.csv"
+        },
+        "httpApi": {
+          "cors": true
+        },
+        "stage": "dev"
+      },
+      "functions": {
+        "api": {
+          "handler": "src/handler.handler",
+          "events": [
+            {
+              "httpApi": {
+                "path": "/{proxy+}",
+                "method": "ANY"
+              }
+            }
+          ]
+        }
+      },
+      "plugins": [
+        "serverless-offline",
+        "serverless-dotenv-plugin"
+      ],
+      "package": {
+        "patterns": [
+          "!node_modules/.cache/**"
+        ]
+      }
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "nodejs18.x",
+      "region": "me-south-1",
+      "environment": {
+        "CONNECTION_STRING": "mongodb+srv://wallmasters:Aa13566964@wallmasters.f7fvy.mongodb.net/Wallmasters?retryWrites=true&w=majority",
+        "JWT_SECRET": "<REDACTED>",
+        "JWT_REFRESH_SECRET": "<REDACTED>",
+        "RATE_FILE": "backend/pricing/sample_prices.csv"
+      },
+      "httpApi": {
+        "cors": true
+      },
+      "stage": "dev"
+    },
+    "dashboard": {
+      "isEnabledForService": false,
+      "requiredAuthentication": false,
+      "orgFeaturesInUse": null,
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": null,
+      "serviceProvider": null,
+      "instanceParameters": null
+    },
+    "error": {
+      "message": "The Serverless version (4.17.0) does not satisfy the \"frameworkVersion\" (3) in serverless",
+      "stack": "ServerlessError2: The Serverless version (4.17.0) does not satisfy the \"frameworkVersion\" (3) in serverless\n    at Service.loadServiceFileParam (file:///C:/Users/abaza/.serverless/releases/4.17.0/package/dist/sf-core.js:1378:9199)\n    at Service.load (file:///C:/Users/abaza/.serverless/releases/4.17.0/package/dist/sf-core.js:1378:6841)\n    at Serverless.init (file:///C:/Users/abaza/.serverless/releases/4.17.0/package/dist/sf-core.js:1384:9813)\n    at runFramework (file:///C:/Users/abaza/.serverless/releases/4.17.0/package/dist/sf-core.js:1411:856)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async TraditionalRunner.run (file:///C:/Users/abaza/.serverless/releases/4.17.0/package/dist/sf-core.js:1407:28336)\n    at async route (file:///C:/Users/abaza/.serverless/releases/4.17.0/package/dist/sf-core.js:1582:2878)\n    at async Object.run (file:///C:/Users/abaza/.serverless/releases/4.17.0/package/dist/sf-core.js:1583:3661)\n    at async run2 (file:///C:/Users/abaza/.serverless/releases/4.17.0/package/dist/sf-core.js:1583:4815)",
+      "code": "FRAMEWORK_VERSION_MISMATCH"
+    },
+    "serviceRawFile": "service: mjd-backend\r\nframeworkVersion: \"3\"\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs18.x\r\n  region: me-south-1\r\n  environment:\r\n    CONNECTION_STRING: ${env:CONNECTION_STRING}\r\n    JWT_SECRET: ${env:JWT_SECRET}\r\n    JWT_REFRESH_SECRET: ${env:JWT_REFRESH_SECRET}\r\n    RATE_FILE: \"${env:RATE_FILE, 'backend/pricing/sample_prices.csv'}\"\r\n\r\n  httpApi:\r\n    cors: true\r\n\r\nfunctions:\r\n  api:\r\n    handler: src/handler.handler\r\n    events:\r\n      - httpApi:\r\n          path: /{proxy+}\r\n          method: ANY\r\n\r\nplugins:\r\n  - serverless-offline\r\n  - serverless-dotenv-plugin\r\n\r\npackage:\r\n  patterns:\r\n    - \"!node_modules/.cache/**\"\r\n",
+    "command": [
+      "deploy"
+    ],
+    "options": {},
+    "orgId": "a4c3fcf6-6062-4e08-9a23-5f3d13322715",
+    "orgName": "abzdevstudio",
+    "userId": "L5k2DKHHCPTHbdxc0y",
+    "userName": "abzdevstudio",
+    "serviceProviderAwsAccountId": "911167890928",
+    "serviceProviderAwsCfStackId": null,
+    "serviceProviderAwsCfStackCreated": null,
+    "serviceProviderAwsCfStackUpdated": null,
+    "serviceProviderAwsCfStackStatus": null,
+    "serviceProviderAwsCfStackOutputs": null
+  }
+}
