@@ -2,7 +2,6 @@
   "name": "mjd-backend",
   "version": "1.0.0",
   "description": "Express + JWT auth API for MJD dashboard",
-  "type": "module",
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
@@ -28,8 +27,9 @@
   },
   "devDependencies": {
     "dotenv-cli": "^8.0.0",
-    "serverless": "^4.14.4",
-    "serverless-offline": "^14.4.0"
+    "serverless": "^3.40.0",
+    "serverless-dotenv-plugin": "^6.0.0",
+    "serverless-offline": "^12.0.4"
   },
   "keywords": [],
   "author": "",

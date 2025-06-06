@@ -5,11 +5,16 @@ provider:
   name: aws
   runtime: nodejs18.x
   region: me-south-1
+  stage: ${opt:stage, 'dev'}
   environment:
     CONNECTION_STRING: ${env:CONNECTION_STRING, ''}
-    JWT_SECRET:        ${env:JWT_SECRET, ''}
+    JWT_SECRET: ${env:JWT_SECRET, ''}
     JWT_REFRESH_SECRET: ${env:JWT_REFRESH_SECRET, ''}
-    RATE_FILE:         ${env:RATE_FILE, 'backend/MJD-PRICELIST.xlsx'}
+    RATE_FILE: ${env:RATE_FILE, 'backend/MJD-PRICELIST.xlsx'}
+    EMAIL_USER: ${env:EMAIL_USER, ''}
+    EMAIL_PASS: ${env:EMAIL_PASS, ''}
+    STAGE: ${self:provider.stage}
+    NODE_OPTIONS: "--enable-source-maps"
 
   httpApi:
     cors: true
@@ -27,5 +32,15 @@ plugins:
   - serverless-dotenv-plugin
 
 package:
+  individually: true
   patterns:
     - "!node_modules/.cache/**"
+    - "!tests/**"
+    - "!*.md"
+    - "!*.log"
+    - "!scripts/**"
+    - "src/**"
+    - "server.js"
+    - "package.json"
+    - "package-lock.json"
+    - "backend/MJD-PRICELIST.xlsx"
