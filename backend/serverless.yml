@@ -3,7 +3,7 @@ frameworkVersion: "3"
 
 provider:
   name: aws
-  runtime: nodejs22.x
+  runtime: nodejs20.x  # ✅ Node 22 is not supported by AWS Lambda
   region: me-south-1
   stage: ${opt:stage, 'dev'}
   environment:
@@ -33,6 +33,7 @@ plugins:
 package:
   individually: true
   patterns:
+    - "!**"  # ❗ Must be first — excludes all by default
     - "!node_modules/.cache/**"
     - "!tests/**"
     - "!*.md"
