@@ -6,7 +6,7 @@ import { parseBoqFile, priceBoq } from '../src/services/boqService.js';
 
 dotenv.config();
 
-const RATE_FILE = process.env.RATE_FILE || path.resolve('backend/pricing/sample_prices.csv');
+const RATE_FILE = process.env.RATE_FILE || path.resolve('backend/MJD-PRICELIST.xlsx');
 
 const files = process.argv.slice(2);
 if (files.length === 0) {

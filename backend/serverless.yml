@@ -6,19 +6,10 @@ provider:
   runtime: nodejs18.x
   region: me-south-1
   environment:
-<<<<<<< HEAD
-    CONNECTION_STRING: ${env:CONNECTION_STRING}
-    JWT_SECRET: ${env:JWT_SECRET}
-    JWT_REFRESH_SECRET: ${env:JWT_REFRESH_SECRET}
-    RATE_FILE: "${env:RATE_FILE, 'backend/pricing/sample_prices.csv'}"
-=======
     CONNECTION_STRING: ${env:CONNECTION_STRING, ''}
     JWT_SECRET:        ${env:JWT_SECRET, ''}
     JWT_REFRESH_SECRET:${env:JWT_REFRESH_SECRET, ''}
-    RATE_FILE:         ${env:RATE_FILE, 'backend/pricing/sample_prices.csv'}
-
-
->>>>>>> 77d7413443fe103da714e6db87685a172ab39fb2
+    RATE_FILE:         ${env:RATE_FILE, 'backend/MJD-PRICELIST.xlsx'}
 
   httpApi:
     cors: true
