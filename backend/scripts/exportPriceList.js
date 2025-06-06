@@ -1,5 +1,5 @@
-const XLSX = require('xlsx');
-const fs = require('fs');
+import XLSX from 'xlsx';
+import fs from 'fs';
 
 const input = process.argv[2] || 'pricing/pricelist.xlsx';
 const sheet = process.argv[3] || 'SERVICES';

@@ -16,7 +16,7 @@ check_internet() {
 install_node() {
   if ! command -v node >/dev/null; then
     echo "Node.js not found. Installing..."
-    curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+    curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
     apt-get install -y nodejs
   fi
 }
