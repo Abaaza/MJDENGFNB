@@ -6,10 +6,10 @@ provider:
   runtime: nodejs18.x
   region: me-south-1
   environment:
-    CONNECTION_STRING: ${env:CONNECTION_STRING}
-    JWT_SECRET:        ${env:JWT_SECRET}
-    JWT_REFRESH_SECRET:${env:JWT_REFRESH_SECRET}
-    RATE_FILE:         ${env:RATE_FILE}
+    CONNECTION_STRING: ${env:CONNECTION_STRING, ''}
+    JWT_SECRET:        ${env:JWT_SECRET, ''}
+    JWT_REFRESH_SECRET:${env:JWT_REFRESH_SECRET, ''}
+    RATE_FILE:         ${env:RATE_FILE, 'backend/pricing/sample_prices.csv'}
 
 
 
