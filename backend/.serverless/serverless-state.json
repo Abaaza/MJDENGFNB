@@ -187,7 +187,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/mjd-backend/dev/1749382580151-2025-06-08T11:36:20.151Z/api.zip"
+                "S3Key": "serverless/mjd-backend/dev/1749384041867-2025-06-08T12:00:41.867Z/api.zip"
               },
               "Handler": "src/handler.handler",
               "Runtime": "nodejs20.x",
@@ -217,14 +217,14 @@
               "ApiLogGroup"
             ]
           },
-          "ApiLambdaVersionQuvYcRlKWRF09XhmnUO9izPdTnMcwTCqFeUF2YD4": {
+          "ApiLambdaVersioneT8g0RbIjLczC2bEJRywrlzBmkm0z0e0X94Z0lUXCjc": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ApiLambdaFunction"
               },
-              "CodeSha256": "tZIJd5StkSKuuVz06Js6nm6NW1aKrU7Jq1kM35AihD0="
+              "CodeSha256": "4pNyv/0/0/UUsTGK9P2qDTrTaosE+PFclVwR9Q6mjUQ="
             }
           },
           "HttpApi": {
@@ -355,7 +355,7 @@
           "ApiLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ApiLambdaVersionQuvYcRlKWRF09XhmnUO9izPdTnMcwTCqFeUF2YD4"
+              "Ref": "ApiLambdaVersioneT8g0RbIjLczC2bEJRywrlzBmkm0z0e0X94Z0lUXCjc"
             },
             "Export": {
               "Name": "sls-mjd-backend-dev-ApiLambdaFunctionQualifiedArn"
@@ -506,7 +506,7 @@
         "timeout": 6,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "ApiLambdaVersionQuvYcRlKWRF09XhmnUO9izPdTnMcwTCqFeUF2YD4"
+        "versionLogicalId": "ApiLambdaVersioneT8g0RbIjLczC2bEJRywrlzBmkm0z0e0X94Z0lUXCjc"
       }
     },
     "configValidationMode": "warn",
@@ -539,7 +539,7 @@
           "!scripts/**"
         ],
         "artifactsS3KeyDirname": "serverless/mjd-backend/dev/code-artifacts",
-        "artifactDirectoryName": "serverless/mjd-backend/dev/1749382580151-2025-06-08T11:36:20.151Z"
+        "artifactDirectoryName": "serverless/mjd-backend/dev/1749384041867-2025-06-08T12:00:41.867Z"
       }
     },
     "layers": {},
@@ -547,7 +547,7 @@
   },
   "package": {
     "individually": true,
-    "artifactDirectoryName": "serverless/mjd-backend/dev/1749382580151-2025-06-08T11:36:20.151Z",
+    "artifactDirectoryName": "serverless/mjd-backend/dev/1749384041867-2025-06-08T12:00:41.867Z",
     "artifact": ""
   }
 }
