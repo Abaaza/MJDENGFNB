@@ -10,7 +10,7 @@
       "region": "me-south-1",
       "stage": "dev",
       "environment": {
-        "CONNECTION_STRING": "mongodb+srv://wallmasters:Aa13566964@wallmasters.f7fvy.mongodb.net/Wallmasters?retryWrites=true&w=majority",
+        "CONNECTION_STRING": "mongodb://wallmasters:Aa13566964@wallmasters-shard-00-00.f7fvy.mongodb.net:27017,wallmasters-shard-00-01.f7fvy.mongodb.net:27017,wallmasters-shard-00-02.f7fvy.mongodb.net:27017/Wallmasters?ssl=true&replicaSet=atlas-1tzdzd-shard-0&authSource=admin&retryWrites=true&w=majority",
         "JWT_SECRET": "your-very-secret-key",
         "JWT_REFRESH_SECRET": "your-refresh-secret-key",
         "RATE_FILE": "backend/MJD-PRICELIST.xlsx",
@@ -187,7 +187,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/mjd-backend/dev/1749222566940-2025-06-06T15:09:26.940Z/api.zip"
+                "S3Key": "serverless/mjd-backend/dev/1749382580151-2025-06-08T11:36:20.151Z/api.zip"
               },
               "Handler": "src/handler.handler",
               "Runtime": "nodejs20.x",
@@ -196,7 +196,7 @@
               "Timeout": 6,
               "Environment": {
                 "Variables": {
-                  "CONNECTION_STRING": "mongodb+srv://wallmasters:Aa13566964@wallmasters.f7fvy.mongodb.net/Wallmasters?retryWrites=true&w=majority",
+                  "CONNECTION_STRING": "mongodb://wallmasters:Aa13566964@wallmasters-shard-00-00.f7fvy.mongodb.net:27017,wallmasters-shard-00-01.f7fvy.mongodb.net:27017,wallmasters-shard-00-02.f7fvy.mongodb.net:27017/Wallmasters?ssl=true&replicaSet=atlas-1tzdzd-shard-0&authSource=admin&retryWrites=true&w=majority",
                   "JWT_SECRET": "your-very-secret-key",
                   "JWT_REFRESH_SECRET": "your-refresh-secret-key",
                   "RATE_FILE": "backend/MJD-PRICELIST.xlsx",
@@ -217,14 +217,14 @@
               "ApiLogGroup"
             ]
           },
-          "ApiLambdaVersionXoMRanJpXSHt0jVsWxwqNTKDkTjX1spywLOPWLxyDs": {
+          "ApiLambdaVersionQuvYcRlKWRF09XhmnUO9izPdTnMcwTCqFeUF2YD4": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ApiLambdaFunction"
               },
-              "CodeSha256": "oPMsLTch+27esMBGkOovX2n051fI1iBb405SyqOzzQk="
+              "CodeSha256": "tZIJd5StkSKuuVz06Js6nm6NW1aKrU7Jq1kM35AihD0="
             }
           },
           "HttpApi": {
@@ -355,7 +355,7 @@
           "ApiLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ApiLambdaVersionXoMRanJpXSHt0jVsWxwqNTKDkTjX1spywLOPWLxyDs"
+              "Ref": "ApiLambdaVersionQuvYcRlKWRF09XhmnUO9izPdTnMcwTCqFeUF2YD4"
             },
             "Export": {
               "Name": "sls-mjd-backend-dev-ApiLambdaFunctionQualifiedArn"
@@ -506,7 +506,7 @@
         "timeout": 6,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "ApiLambdaVersionXoMRanJpXSHt0jVsWxwqNTKDkTjX1spywLOPWLxyDs"
+        "versionLogicalId": "ApiLambdaVersionQuvYcRlKWRF09XhmnUO9izPdTnMcwTCqFeUF2YD4"
       }
     },
     "configValidationMode": "warn",
@@ -526,20 +526,20 @@
       "package": {
         "individually": true,
         "patterns": [
-          "!**",
-          "!node_modules/.cache/**",
-          "!tests/**",
-          "!*.md",
-          "!*.log",
-          "!scripts/**",
           "src/**",
           "server.js",
           "package.json",
           "package-lock.json",
-          "backend/MJD-PRICELIST.xlsx"
+          "node_modules/**",
+          "backend/MJD-PRICELIST.xlsx",
+          "!node_modules/.cache/**",
+          "!tests/**",
+          "!*.md",
+          "!*.log",
+          "!scripts/**"
         ],
         "artifactsS3KeyDirname": "serverless/mjd-backend/dev/code-artifacts",
-        "artifactDirectoryName": "serverless/mjd-backend/dev/1749222566940-2025-06-06T15:09:26.940Z"
+        "artifactDirectoryName": "serverless/mjd-backend/dev/1749382580151-2025-06-08T11:36:20.151Z"
       }
     },
     "layers": {},
@@ -547,7 +547,7 @@
   },
   "package": {
     "individually": true,
-    "artifactDirectoryName": "serverless/mjd-backend/dev/1749222566940-2025-06-06T15:09:26.940Z",
+    "artifactDirectoryName": "serverless/mjd-backend/dev/1749382580151-2025-06-08T11:36:20.151Z",
     "artifact": ""
   }
 }

@@ -2,6 +2,7 @@
   "name": "mjd-backend",
   "version": "1.0.0",
   "description": "Express + JWT auth API for MJD dashboard",
+  "type": "module",
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",

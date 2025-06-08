@@ -1,22 +1,25 @@
-//app.js
+// src/app.js
 import express from 'express';
-import cors    from 'cors';
-import './config/db.js';           // <— just import; establishes pool
+import cors from 'cors';
+import connect from './config/db.js'; // Updated: now imports the async connect function
 
-import authRoutes    from './routes/auth.routes.js';
+// Await DB connection before setting up routes
+await connect(); // Ensures the DB is ready (works in Node.js 20 with ESM)
+
+import authRoutes from './routes/auth.routes.js';
 import projectRoutes from './routes/project.routes.js';
-import boqRoutes     from './routes/boq.routes.js';
-import matchRoutes   from './routes/match.routes.js';
-
+import boqRoutes from './routes/boq.routes.js';
+import matchRoutes from './routes/match.routes.js';
 
 const app = express();
+
 app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json());
 
-app.use('/api/auth',     authRoutes);
+// Route declarations
+app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
-app.use('/api/boq',      boqRoutes);
-app.use('/api/match',    matchRoutes);
-
+app.use('/api/boq', boqRoutes);
+app.use('/api/match', matchRoutes);
 
 export default app;

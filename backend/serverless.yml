@@ -3,7 +3,7 @@ frameworkVersion: "3"
 
 provider:
   name: aws
-  runtime: nodejs20.x  # ✅ Node 22 is not supported by AWS Lambda
+  runtime: nodejs20.x
   region: me-south-1
   stage: ${opt:stage, 'dev'}
   environment:
@@ -33,14 +33,14 @@ plugins:
 package:
   individually: true
   patterns:
-    - "!**"  # ❗ Must be first — excludes all by default
+    - "src/**"
+    - "server.js"
+    - "package.json"
+    - "package-lock.json"
+    - "node_modules/**"
+    - "backend/MJD-PRICELIST.xlsx"
     - "!node_modules/.cache/**"
     - "!tests/**"
     - "!*.md"
     - "!*.log"
     - "!scripts/**"
-    - "src/**"
-    - "server.js"
-    - "package.json"
-    - "package-lock.json"
-    - "backend/MJD-PRICELIST.xlsx"
