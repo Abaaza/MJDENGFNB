@@ -10,12 +10,17 @@ const router = Router();
 
 /* 🔧 Helper: Extract JSON safely from raw body */
 function safeParseBody(req) {
-  try {
-    if (req.body && typeof req.body === 'object') return req.body;
-    if (typeof req.body === 'string') return JSON.parse(req.body);
-  } catch (e) {
-    console.error('[Body Parse Error]', e);
+  const sources = [req.body, req.rawBody, req.event && req.event.body];
+  for (const src of sources) {
+    if (!src) continue;
+    if (typeof src === 'object' && !Buffer.isBuffer(src)) return src;
+    try {
+      return JSON.parse(src.toString());
+    } catch (e) {
+      // ignore and try next source
+    }
   }
+  console.warn('[Body] Unable to parse body');
   return {};
 }
 
