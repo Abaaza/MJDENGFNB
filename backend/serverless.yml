@@ -5,7 +5,7 @@ provider:
   name: aws
   runtime: nodejs20.x
   region: me-south-1
-  stage: ${opt:stage, 'prod'}  # 👈 Default to 'prod' if no stage is passed
+  stage: ${opt:stage, '$default'}  # Deploy to the default stage without a path prefix
   environment:
     CONNECTION_STRING: ${env:CONNECTION_STRING, ''}
     JWT_SECRET: ${env:JWT_SECRET, ''}

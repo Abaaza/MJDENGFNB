@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://2gng2p5vnc.execute-api.me-south-1.amazonaws.com/prod';
+const API_URL = import.meta.env.VITE_API_URL || 'https://2gng2p5vnc.execute-api.me-south-1.amazonaws.com';
 
 async function fetchProjects() {
   const res = await fetch(`${API_URL}/api/projects`);
