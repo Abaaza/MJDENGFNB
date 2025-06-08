@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from 'react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+const API_URL = import.meta.env.VITE_API_URL || 'https://2gng2p5vnc.execute-api.me-south-1.amazonaws.com/';
 
 const AuthContext = createContext();
 

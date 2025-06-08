@@ -46,7 +46,7 @@ The BlueBeam import converts CSV or XML exports into BoQ line items and flags du
 
 ### Frontend
 
-The frontend expects `VITE_API_URL` to point at the running backend. A sample `.env` file in `frontend/` sets this to `http://localhost:4000` for local development.
+The frontend expects `VITE_API_URL` to point at the running backend. A sample `.env` file in `frontend/` sets this to `https://2gng2p5vnc.execute-api.me-south-1.amazonaws.com/` for local development.
 
 ### Sample data
 
