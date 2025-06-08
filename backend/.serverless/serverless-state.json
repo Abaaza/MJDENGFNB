@@ -20,7 +20,8 @@
         "NODE_OPTIONS": "--enable-source-maps"
       },
       "httpApi": {
-        "cors": true
+        "cors": true,
+        "payload": "2.0"
       },
       "versionFunctions": true,
       "compiledCloudFormationTemplate": {
@@ -187,7 +188,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/mjd-backend/dev/1749391619276-2025-06-08T14:06:59.276Z/api.zip"
+                "S3Key": "serverless/mjd-backend/dev/1749392376511-2025-06-08T14:19:36.511Z/api.zip"
               },
               "Handler": "src/handler.handler",
               "Runtime": "nodejs20.x",
@@ -217,14 +218,14 @@
               "ApiLogGroup"
             ]
           },
-          "ApiLambdaVersionVEdI0H0nqXafep68fkGtoAEbS4wHDxaSZTZJHKDhs": {
+          "ApiLambdaVersioni5YQ785ICthFihLMBgQnJU6Hb8g9nJ2pCkkYQ8vEWP8": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "ApiLambdaFunction"
               },
-              "CodeSha256": "FIrLRrtEckIEf0/4i2OyZesPFrfbhAEpWmXoEW3lmcM="
+              "CodeSha256": "CuNHSZuhChW8UmNVb4g2YiTxGICDAYF6+GnDRRw+6Z0="
             }
           },
           "HttpApi": {
@@ -355,7 +356,7 @@
           "ApiLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "ApiLambdaVersionVEdI0H0nqXafep68fkGtoAEbS4wHDxaSZTZJHKDhs"
+              "Ref": "ApiLambdaVersioni5YQ785ICthFihLMBgQnJU6Hb8g9nJ2pCkkYQ8vEWP8"
             },
             "Export": {
               "Name": "sls-mjd-backend-dev-ApiLambdaFunctionQualifiedArn"
@@ -506,7 +507,7 @@
         "timeout": 6,
         "runtime": "nodejs20.x",
         "vpc": {},
-        "versionLogicalId": "ApiLambdaVersionVEdI0H0nqXafep68fkGtoAEbS4wHDxaSZTZJHKDhs"
+        "versionLogicalId": "ApiLambdaVersioni5YQ785ICthFihLMBgQnJU6Hb8g9nJ2pCkkYQ8vEWP8"
       }
     },
     "configValidationMode": "warn",
@@ -539,7 +540,7 @@
           "!scripts/**"
         ],
         "artifactsS3KeyDirname": "serverless/mjd-backend/dev/code-artifacts",
-        "artifactDirectoryName": "serverless/mjd-backend/dev/1749391619276-2025-06-08T14:06:59.276Z"
+        "artifactDirectoryName": "serverless/mjd-backend/dev/1749392376511-2025-06-08T14:19:36.511Z"
       }
     },
     "layers": {},
@@ -547,7 +548,7 @@
   },
   "package": {
     "individually": true,
-    "artifactDirectoryName": "serverless/mjd-backend/dev/1749391619276-2025-06-08T14:06:59.276Z",
+    "artifactDirectoryName": "serverless/mjd-backend/dev/1749392376511-2025-06-08T14:19:36.511Z",
     "artifact": ""
   }
 }
