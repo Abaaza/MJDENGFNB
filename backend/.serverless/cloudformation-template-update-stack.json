@@ -74,7 +74,7 @@
     "ApiLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/mjd-backend-dev-api"
+        "LogGroupName": "/aws/lambda/mjd-backend-prod-api"
       }
     },
     "IamRoleLambdaExecution": {
@@ -103,7 +103,7 @@
                 "-",
                 [
                   "mjd-backend",
-                  "dev",
+                  "prod",
                   "lambda"
                 ]
               ]
@@ -120,7 +120,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/mjd-backend-dev*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/mjd-backend-prod*:*"
                     }
                   ]
                 },
@@ -131,7 +131,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/mjd-backend-dev*:*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/mjd-backend-prod*:*:*"
                     }
                   ]
                 }
@@ -145,7 +145,7 @@
             "-",
             [
               "mjd-backend",
-              "dev",
+              "prod",
               {
                 "Ref": "AWS::Region"
               },
@@ -162,11 +162,11 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/mjd-backend/dev/1749392376511-2025-06-08T14:19:36.511Z/api.zip"
+          "S3Key": "serverless/mjd-backend/prod/1749393648501-2025-06-08T14:40:48.501Z/api.zip"
         },
         "Handler": "src/handler.handler",
         "Runtime": "nodejs20.x",
-        "FunctionName": "mjd-backend-dev-api",
+        "FunctionName": "mjd-backend-prod-api",
         "MemorySize": 1024,
         "Timeout": 6,
         "Environment": {
@@ -177,7 +177,7 @@
             "RATE_FILE": "backend/MJD-PRICELIST.xlsx",
             "EMAIL_USER": "info@wall-masters.com",
             "EMAIL_PASS": "Aa@13566964",
-            "STAGE": "dev",
+            "STAGE": "prod",
             "NODE_OPTIONS": "--enable-source-maps"
           }
         },
@@ -192,20 +192,20 @@
         "ApiLogGroup"
       ]
     },
-    "ApiLambdaVersioni5YQ785ICthFihLMBgQnJU6Hb8g9nJ2pCkkYQ8vEWP8": {
+    "ApiLambdaVersion89MR4EnKk96bufuqk0FxQ1hIkocalQZ9IPit1sbIGs": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ApiLambdaFunction"
         },
-        "CodeSha256": "CuNHSZuhChW8UmNVb4g2YiTxGICDAYF6+GnDRRw+6Z0="
+        "CodeSha256": "aBCZqINJUAJL0zfy8wWRU9jCi3/f2nQTrksuQWdtahU="
       }
     },
     "HttpApi": {
       "Type": "AWS::ApiGatewayV2::Api",
       "Properties": {
-        "Name": "dev-mjd-backend",
+        "Name": "prod-mjd-backend",
         "ProtocolType": "HTTP",
         "CorsConfiguration": {
           "AllowHeaders": [
@@ -327,16 +327,16 @@
         "Ref": "ServerlessDeploymentBucket"
       },
       "Export": {
-        "Name": "sls-mjd-backend-dev-ServerlessDeploymentBucketName"
+        "Name": "sls-mjd-backend-prod-ServerlessDeploymentBucketName"
       }
     },
     "ApiLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ApiLambdaVersioni5YQ785ICthFihLMBgQnJU6Hb8g9nJ2pCkkYQ8vEWP8"
+        "Ref": "ApiLambdaVersion89MR4EnKk96bufuqk0FxQ1hIkocalQZ9IPit1sbIGs"
       },
       "Export": {
-        "Name": "sls-mjd-backend-dev-ApiLambdaFunctionQualifiedArn"
+        "Name": "sls-mjd-backend-prod-ApiLambdaFunctionQualifiedArn"
       }
     },
     "HttpApiId": {
@@ -345,7 +345,7 @@
         "Ref": "HttpApi"
       },
       "Export": {
-        "Name": "sls-mjd-backend-dev-HttpApiId"
+        "Name": "sls-mjd-backend-prod-HttpApiId"
       }
     },
     "HttpApiUrl": {
@@ -370,7 +370,7 @@
         ]
       },
       "Export": {
-        "Name": "sls-mjd-backend-dev-HttpApiUrl"
+        "Name": "sls-mjd-backend-prod-HttpApiUrl"
       }
     }
   }
