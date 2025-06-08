@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, BrowserRouter } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
 import Dashboard from './pages/Dashboard';
@@ -17,16 +17,16 @@ function AuthedApp() {
       <TopBar />
       <Sidebar />
       <main className="p-8 space-y-6 flex-1">
-          <Routes>
-            <Route index element={<Dashboard />} />
-            <Route path="/new-project" element={<NewProject />} />
-            <Route path="/projects/:id" element={<ProjectOverview />} />
-            <Route path="/projects/:id/documents" element={<ProjectDocuments />} />
-            <Route path="/projects/:id/boq" element={<ProjectBoq />} />
-            <Route path="/price-match" element={<PriceMatch />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
+        <Routes>
+          <Route index element={<Dashboard />} />
+          <Route path="/new-project" element={<NewProject />} />
+          <Route path="/projects/:id" element={<ProjectOverview />} />
+          <Route path="/projects/:id/documents" element={<ProjectDocuments />} />
+          <Route path="/projects/:id/boq" element={<ProjectBoq />} />
+          <Route path="/price-match" element={<PriceMatch />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
     </div>
   );
 }
@@ -42,6 +42,15 @@ function UnauthedApp() {
 }
 
 export default function App() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth(); // ensure `loading` is part of your hook
+
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <span className="text-gray-600">Loading...</span>
+      </div>
+    );
+  }
+
   return user ? <AuthedApp /> : <UnauthedApp />;
 }
