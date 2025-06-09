@@ -1,8 +1,6 @@
 import { useState, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
 const API_URL = import.meta.env.VITE_API_URL || 'https://2gng2p5vnc.execute-api.me-south-1.amazonaws.com';
 
 export default function PriceMatch() {
@@ -11,6 +9,7 @@ export default function PriceMatch() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [workbook, setWorkbook] = useState(null);
+  const [editing, setEditing] = useState({});
   const timerRef = useRef(null);
   const { getRootProps, getInputProps, open, isDragActive } = useDropzone({
     onDrop: (accepted) => {
@@ -129,6 +128,43 @@ export default function PriceMatch() {
     return q * rate;
   }
 
+  function toggleEdit(i) {
+    setEditing((e) => ({ ...e, [i]: !e[i] }));
+  }
+
+  async function searchPricelist(i) {
+    const desc = rows[i]?.inputDescription || '';
+    try {
+      const res = await fetch(`${API_URL}/api/prices/search?q=${encodeURIComponent(desc)}`);
+      if (!res.ok) throw new Error('Search failed');
+      const data = await res.json();
+      setRows((rows) =>
+        rows.map((r, j) =>
+          j === i
+            ? {
+                ...r,
+                matches: data.map((d) => ({
+                  code: d.code,
+                  description: d.description,
+                  unit: d.unit,
+                  unitRate: d.rate,
+                  confidence: '',
+                })),
+                selected: 0,
+                engine: 'search',
+                code: data[0]?.code || '',
+                matchDesc: data[0]?.description || '',
+                unit: data[0]?.unit || '',
+                rate: data[0]?.rate ?? '',
+              }
+            : r
+        )
+      );
+    } catch (err) {
+      console.error('Search error', err);
+    }
+  }
+
   function buildData() {
     return rows.map((r) => ({
       Description: r.inputDescription,
@@ -144,25 +180,28 @@ export default function PriceMatch() {
   }
 
   function exportExcel() {
-    const data = buildData();
-    const resultSheet = XLSX.utils.json_to_sheet(data);
+    if (!workbook) return;
     const wb = XLSX.utils.book_new();
-    if (workbook) {
-      for (const name of workbook.SheetNames) {
-        XLSX.utils.book_append_sheet(wb, workbook.Sheets[name], name);
-      }
-    }
-    XLSX.utils.book_append_sheet(wb, resultSheet, 'Results');
+    const name = workbook.SheetNames[0];
+    const ws = XLSX.utils.sheet_to_json(workbook.Sheets[name], { header: 1, defval: '' });
+    const headerIdx = ws.findIndex((r) => r.some((c) => /(description|desc|details)/i.test(String(c))));
+    const startCol = ws[headerIdx].length;
+    const extra = ['Code', 'Match', 'Unit', 'Rate', 'Engine', 'Confidence', 'Total'];
+    extra.forEach((h, idx) => { ws[headerIdx][startCol + idx] = h; });
+    rows.forEach((r, i) => {
+      const row = ws[headerIdx + 1 + i] || [];
+      row[startCol + 0] = r.code;
+      row[startCol + 1] = r.matchDesc;
+      row[startCol + 2] = r.unit;
+      row[startCol + 3] = r.rate;
+      row[startCol + 4] = r.engine;
+      row[startCol + 5] = r.confidence;
+      row[startCol + 6] = rowTotal(r).toFixed(2);
+      ws[headerIdx + 1 + i] = row;
+    });
+    const newWs = XLSX.utils.aoa_to_sheet(ws);
+    XLSX.utils.book_append_sheet(wb, newWs, name);
     XLSX.writeFile(wb, 'price_match.xlsx');
-  }
-
-  function exportPdf() {
-    const data = buildData();
-    const headers = Object.keys(data[0] || {});
-    const body = data.map((d) => headers.map((h) => d[h]));
-    const doc = new jsPDF();
-    autoTable(doc, { head: [headers], body });
-    doc.save('price_match.pdf');
   }
 
   const grandTotal = rows.reduce((sum, r) => sum + rowTotal(r), 0);
@@ -232,51 +271,89 @@ export default function PriceMatch() {
                           </label>
                         ))}
                       </div>
-                      <textarea
-                        readOnly
-                        value={r.matchDesc}
-                        className="min-w-[20rem] border rounded px-1 mt-1 text-xs"
-                      />
-                      <input
-                        type="text"
-                        value={r.code}
-                        onChange={(e) => updateField(i, 'code', e.target.value)}
-                        className="w-32 border rounded px-1 mt-1"
-                      />
+                      {editing[i] ? (
+                        <>
+                          <textarea
+                            value={r.matchDesc}
+                            onChange={(e) => updateField(i, 'matchDesc', e.target.value)}
+                            className="min-w-[20rem] border rounded px-1 mt-1 text-xs"
+                          />
+                          <input
+                            type="text"
+                            value={r.code}
+                            onChange={(e) => updateField(i, 'code', e.target.value)}
+                            className="w-32 border rounded px-1 mt-1"
+                          />
+                        </>
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <span>{r.code} - {r.matchDesc}</span>
+                          <button onClick={() => toggleEdit(i)} className="text-blue-600">✎</button>
+                        </div>
+                      )}
+                      <button onClick={() => searchPricelist(i)} className="ml-1 text-xs text-brand-accent underline">Search</button>
                     </td>
                     <td className="px-2 py-1 border-t border-r">
-                      <input
-                        type="text"
-                        value={r.unit}
-                        onChange={(e) => updateField(i, 'unit', e.target.value)}
-                        className="w-16 border rounded px-1"
-                      />
+                      {editing[i] ? (
+                        <input
+                          type="text"
+                          value={r.unit}
+                          onChange={(e) => updateField(i, 'unit', e.target.value)}
+                          className="w-16 border rounded px-1"
+                        />
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <span>{r.unit}</span>
+                          <button onClick={() => toggleEdit(i)} className="text-blue-600">✎</button>
+                        </div>
+                      )}
                     </td>
                     <td className="px-2 py-1 border-t border-r">
-                      <input
-                        type="number"
-                        value={r.qty}
-                        onChange={(e) => updateQty(i, e.target.value)}
-                        className="w-20 border rounded px-1"
-                      />
+                      {editing[i] ? (
+                        <input
+                          type="number"
+                          value={r.qty}
+                          onChange={(e) => updateQty(i, e.target.value)}
+                          className="w-20 border rounded px-1"
+                        />
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <span>{r.qty}</span>
+                          <button onClick={() => toggleEdit(i)} className="text-blue-600">✎</button>
+                        </div>
+                      )}
                     </td>
                     <td className="px-2 py-1 border-t border-r">
-                      <input
-                        type="number"
-                        value={r.rate}
-                        onChange={(e) => updateField(i, 'rate', e.target.value)}
-                        className="w-20 border rounded px-1"
-                      />
+                      {editing[i] ? (
+                        <input
+                          type="number"
+                          value={r.rate}
+                          onChange={(e) => updateField(i, 'rate', e.target.value)}
+                          className="w-20 border rounded px-1"
+                        />
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <span>{r.rate}</span>
+                          <button onClick={() => toggleEdit(i)} className="text-blue-600">✎</button>
+                        </div>
+                      )}
                     </td>
                     <td className="px-2 py-1 border-t border-r">{rowTotal(r).toFixed(2)}</td>
                     <td className="px-2 py-1 border-t border-r">{r.engine}</td>
                     <td className="px-2 py-1 border-t border-r">
-                      <input
-                        type="number"
-                        value={r.confidence}
-                        onChange={(e) => updateField(i, 'confidence', e.target.value)}
-                        className="w-20 border rounded px-1"
-                      />
+                      {editing[i] ? (
+                        <input
+                          type="number"
+                          value={r.confidence}
+                          onChange={(e) => updateField(i, 'confidence', e.target.value)}
+                          className="w-20 border rounded px-1"
+                        />
+                      ) : (
+                        <div className="flex items-center gap-1">
+                          <span>{r.confidence}</span>
+                          <button onClick={() => toggleEdit(i)} className="text-blue-600">✎</button>
+                        </div>
+                      )}
                     </td>
                     <td className="px-2 py-1 border-t">
                       <button
@@ -304,7 +381,6 @@ export default function PriceMatch() {
         </div>
         <div className="flex gap-2 text-xs mt-2">
           <button onClick={exportExcel} className="px-4 py-2 bg-brand-dark text-white rounded hover:bg-brand-accent">Excel</button>
-          <button onClick={exportPdf} className="px-4 py-2 bg-brand-dark text-white rounded hover:bg-brand-accent">PDF</button>
         </div>
         </>
       )}
