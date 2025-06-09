@@ -75,6 +75,11 @@ matching. Each row shows the best matched item from the price list along with
 its calculated unit rate and a confidence score. Price list entries without a
 rate are ignored during matching.
 
+After matching you can export the results to Excel or save them directly to a
+new project using the **Save to Project** button. The matched items are stored
+in the project's pricing history so you can edit them later from the Projects
+section.
+
 ### Running tests
 
 Execute the backend unit tests with:
