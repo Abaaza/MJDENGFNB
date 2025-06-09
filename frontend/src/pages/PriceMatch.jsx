@@ -179,26 +179,19 @@ export default function PriceMatch() {
 
   function exportExcel() {
     if (!workbook) return;
-    const wb = XLSX.utils.book_new();
     const name = workbook.SheetNames[0];
-    const ws = XLSX.utils.sheet_to_json(workbook.Sheets[name], { header: 1, defval: '' });
-    const headerIdx = ws.findIndex((r) => r.some((c) => /(description|desc|details)/i.test(String(c))));
-    const startCol = ws[headerIdx].length;
+    const ws = workbook.Sheets[name];
+    const data = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+    const headerIdx = data.findIndex((r) => r.some((c) => /(description|desc|details)/i.test(String(c))));
+    const startCol = data[headerIdx].length;
     const extra = ['Code', 'Match', 'Unit', 'Rate', 'Confidence', 'Total'];
-    extra.forEach((h, idx) => { ws[headerIdx][startCol + idx] = h; });
+    XLSX.utils.sheet_add_aoa(ws, [extra], { origin: { r: headerIdx, c: startCol } });
     rows.forEach((r, i) => {
-      const row = ws[headerIdx + 1 + i] || [];
-      row[startCol + 0] = r.code;
-      row[startCol + 1] = r.matchDesc;
-      row[startCol + 2] = r.unit;
-      row[startCol + 3] = r.rate;
-      row[startCol + 4] = r.confidence;
-      row[startCol + 5] = rowTotal(r).toFixed(2);
-      ws[headerIdx + 1 + i] = row;
+      const row = [r.code, r.matchDesc, r.unit, r.rate, r.confidence, rowTotal(r).toFixed(2)];
+      XLSX.utils.sheet_add_aoa(ws, [row], { origin: { r: headerIdx + 1 + i, c: startCol } });
     });
-    const newWs = XLSX.utils.aoa_to_sheet(ws);
-    XLSX.utils.book_append_sheet(wb, newWs, name);
-    XLSX.writeFile(wb, 'price_match.xlsx');
+    workbook.Sheets[name] = ws;
+    XLSX.writeFile(workbook, 'price_match.xlsx');
   }
 
   function handleProjectChange(e) {
@@ -317,14 +310,7 @@ export default function PriceMatch() {
                       )}
                       <button onClick={() => searchPricelist(i)} className="ml-1 text-xs text-brand-accent underline">Search</button>
                     </td>
-                    <td className="px-2 py-1 border-t border-r">
-                      <input
-                        type="text"
-                        value={r.unit}
-                        onChange={(e) => updateField(i, 'unit', e.target.value)}
-                        className="w-16 border rounded px-1"
-                      />
-                    </td>
+                    <td className="px-2 py-1 border-t border-r">{r.unit}</td>
                     <td className="px-2 py-1 border-t border-r">
                       <input
                         type="number"
@@ -342,21 +328,7 @@ export default function PriceMatch() {
                       />
                     </td>
                     <td className="px-2 py-1 border-t border-r">{rowTotal(r).toFixed(2)}</td>
-                    <td className="px-2 py-1 border-t border-r">
-                      {editing[i] ? (
-                        <input
-                          type="number"
-                          value={r.confidence}
-                          onChange={(e) => updateField(i, 'confidence', e.target.value)}
-                          className="w-20 border rounded px-1"
-                        />
-                      ) : (
-                        <div className="flex items-center gap-1">
-                          <span>{r.confidence}</span>
-                          <button onClick={() => toggleEdit(i)} className="text-blue-600">✎</button>
-                        </div>
-                      )}
-                    </td>
+                    <td className="px-2 py-1 border-t border-r">{r.confidence}</td>
                     <td className="px-2 py-1 border-t">
                       <button
                         onClick={() => deleteRow(i)}

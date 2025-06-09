@@ -1,8 +1,13 @@
 import { useState } from 'react';
-import { usePrices, useUpdatePrice } from '../hooks/usePrices';
+import { usePrices, useUpdatePrice, useSearchPrices } from '../hooks/usePrices';
 
 export default function PriceList() {
-  const { data, isLoading, error } = usePrices();
+  const [search, setSearch] = useState('');
+  const pricesQuery = usePrices();
+  const searchQuery = useSearchPrices(search);
+  const data = search ? searchQuery.data ?? [] : pricesQuery.data ?? [];
+  const isLoading = search ? searchQuery.isLoading : pricesQuery.isLoading;
+  const error = search ? searchQuery.error : pricesQuery.error;
   const update = useUpdatePrice();
   const [editing, setEditing] = useState({});
 
@@ -28,6 +33,15 @@ export default function PriceList() {
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-semibold text-brand-dark">Price List</h1>
+      <div>
+        <input
+          type="text"
+          placeholder="Search..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="border px-2 py-1 rounded mb-2 w-64"
+        />
+      </div>
       <table className="min-w-full text-sm">
         <thead>
           <tr className="bg-gray-100">

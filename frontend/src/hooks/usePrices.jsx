@@ -12,6 +12,18 @@ export function usePrices() {
   return useQuery({ queryKey: ['prices'], queryFn: fetchPrices });
 }
 
+export function useSearchPrices(query) {
+  return useQuery({
+    queryKey: ['prices', 'search', query],
+    queryFn: async () => {
+      const res = await fetch(`${API_URL}/api/prices/search?q=${encodeURIComponent(query)}`);
+      if (!res.ok) throw new Error('Search failed');
+      return res.json();
+    },
+    enabled: !!query
+  });
+}
+
 export function useUpdatePrice() {
   const qc = useQueryClient();
   return useMutation({
