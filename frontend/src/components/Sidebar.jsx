@@ -8,7 +8,6 @@ export default function Sidebar() {
     { name: 'Projects', to: '/' },
     { name: 'New Project', to: '/new-project', icon: PlusIcon },
     { name: 'Price Match', to: '/price-match' },
-    { name: 'Admin', to: '/admin' },
   ];
   return (
     <nav className="bg-brand-dark text-white flex items-center gap-6 px-6 py-3">
