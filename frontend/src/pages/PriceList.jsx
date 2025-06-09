@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { usePrices, useUpdatePrice, useSearchPrices } from '../hooks/usePrices';
+import Spinner from '../components/Spinner';
 
 export default function PriceList() {
   const [search, setSearch] = useState('');
@@ -11,7 +12,7 @@ export default function PriceList() {
   const update = useUpdatePrice();
   const [editing, setEditing] = useState({});
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) return <Spinner className="py-10" />;
   if (error) return <p className="text-red-600">{error.message}</p>;
 
   function handleChange(id, field, value) {
