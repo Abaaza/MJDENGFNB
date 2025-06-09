@@ -1,15 +1,4 @@
 
-
-Skip to content
-Using Gmail with screen readers
-2 of 845
-(no subject)
-Inbox
-
-Ayman Hofi <ay.hofi@gmail.com>
-02:02 (10 hours ago)
-to me
-
 import tkinter as tk
 from tkinter import filedialog, messagebox, scrolledtext
 import openai
