@@ -32,7 +32,8 @@ export default function PriceMatch() {
     fd.append('file', file);
     if (openaiKey) {
       fd.append('openaiKey', openaiKey);
-    } else if (cohereKey) {
+    }
+    if (cohereKey) {
       fd.append('cohereKey', cohereKey);
     }
     console.log('Uploading file', file.name, file.size);
@@ -95,6 +96,7 @@ export default function PriceMatch() {
         return {
           ...r,
           selected: idx,
+          engine: m.engine || r.engine,
           code: m.code || '',
           matchDesc: m.description || '',
           unit: m.unit || '',
