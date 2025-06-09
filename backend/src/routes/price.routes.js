@@ -9,12 +9,18 @@ router.get('/', async (req, res) => {
   res.json(items);
 });
 
-// Simple search by description
+// Search by code or description
 router.get('/search', async (req, res) => {
   const q = String(req.query.q || '').trim();
   if (!q) return res.json([]);
   const regex = new RegExp(q, 'i');
-  const items = await PriceItem.find({ description: regex })
+  const items = await PriceItem.find({
+    $or: [
+      { description: regex },
+      { code: regex },
+      { ref: regex }
+    ]
+  })
     .sort({ description: 1 })
     .limit(20)
     .lean();
