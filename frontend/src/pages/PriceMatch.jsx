@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
@@ -11,7 +11,6 @@ export default function PriceMatch() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [workbook, setWorkbook] = useState(null);
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem('openaiKey') || '');
   const timerRef = useRef(null);
   const { getRootProps, getInputProps, open, isDragActive } = useDropzone({
     onDrop: (accepted) => {
@@ -22,12 +21,10 @@ export default function PriceMatch() {
     noKeyboard: true,
   });
 
-  useEffect(() => {
-    localStorage.setItem('openaiKey', apiKey);
-  }, [apiKey]);
 
   async function handleFile(file) {
     if (!file) return;
+    const apiKey = localStorage.getItem('openaiKey') || '';
     const arrayBuffer = await file.arrayBuffer();
     setWorkbook(XLSX.read(arrayBuffer));
     const fd = new FormData();
@@ -165,15 +162,6 @@ export default function PriceMatch() {
   return (
     <div className="space-y-4 p-4">
       <h1 className="text-2xl font-semibold text-brand-dark mb-2">Price Match</h1>
-      <div className="mb-4">
-        <label className="block text-sm font-medium">OpenAI API Key</label>
-        <input
-          type="text"
-          value={apiKey}
-          onChange={(e) => setApiKey(e.target.value)}
-          className="w-full border rounded px-2 py-1"
-        />
-      </div>
       <div
         {...getRootProps()}
         className={`border-2 border-dashed rounded p-6 text-center cursor-pointer ${isDragActive ? 'bg-brand-light' : ''}`}

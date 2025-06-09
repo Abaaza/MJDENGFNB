@@ -3,7 +3,9 @@ import { Fragment } from 'react';
 import {
   UserCircleIcon,
   ArrowRightOnRectangleIcon,
+  Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 export default function TopBar() {
@@ -35,6 +37,19 @@ export default function TopBar() {
           leaveTo="transform opacity-0 scale-95"
         >
           <Menu.Items className="absolute right-0 mt-2 w-40 origin-top-right rounded-md bg-white text-black shadow-lg focus:outline-none p-1">
+            <Menu.Item>
+              {({ active }) => (
+                <Link
+                  to="/admin"
+                  className={`${
+                    active ? 'bg-gray-100' : ''
+                  } w-full flex items-center gap-2 px-4 py-2 text-sm`}
+                >
+                  <Cog6ToothIcon className="h-5 w-5" />
+                  Admin
+                </Link>
+              )}
+            </Menu.Item>
             <Menu.Item>
               {({ active }) => (
                 <button
