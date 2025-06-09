@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
-import { matchFromFiles } from '../services/matchService.js';
 import { openAiMatchFromFiles } from '../services/openAiService.js';
 import { cohereMatchFromFiles } from '../services/cohereService.js';
 import { fileURLToPath } from 'url';
@@ -32,7 +31,7 @@ router.post('/', upload.single('file'), async (req, res) => {
     } else if (cohereKey) {
       results = await cohereMatchFromFiles(PRICE_FILE, req.file.buffer, cohereKey);
     } else {
-      results = matchFromFiles(PRICE_FILE, req.file.buffer);
+      return res.status(400).json({ message: 'No API key provided' });
     }
     console.log('Price match results:', results.length);
     res.json(results);
