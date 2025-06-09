@@ -10,11 +10,19 @@ export default function PriceList() {
   if (error) return <p className="text-red-600">{error.message}</p>;
 
   function handleChange(id, field, value) {
-    setEditing(e => ({ ...e, [id]: { ...e[id], [field]: value } }));
+    setEditing(prev => ({
+      ...prev,
+      [id]: {
+        ...prev[id],
+        [field]: value,
+      },
+    }));
   }
 
   function handleSave(id) {
-    update.mutate({ id, updates: editing[id] });
+    if (editing[id]) {
+      update.mutate({ id, updates: editing[id] });
+    }
   }
 
   return (
@@ -26,38 +34,40 @@ export default function PriceList() {
             <th className="p-2 text-left">Description</th>
             <th className="p-2 text-left">Unit</th>
             <th className="p-2 text-left">Rate</th>
-            <th className="p-2"></th>
+            <th className="p-2 text-left">Actions</th>
           </tr>
         </thead>
         <tbody>
           {data.map(item => {
-            const values = editing[item._id] || {};
+            const { _id, description, unit, rate } = item;
+            const values = editing[_id] || {};
             return (
-              <tr key={item._id} className="border-b">
+              <tr key={_id} className="border-b">
                 <td className="p-2">
                   <input
                     className="w-full border px-2 py-1"
-                    defaultValue={item.description}
-                    onChange={e => handleChange(item._id, 'description', e.target.value)}
+                    value={values.description ?? description}
+                    onChange={e => handleChange(_id, 'description', e.target.value)}
                   />
                 </td>
                 <td className="p-2">
                   <input
                     className="w-full border px-2 py-1"
-                    defaultValue={item.unit}
-                    onChange={e => handleChange(item._id, 'unit', e.target.value)}
+                    value={values.unit ?? unit}
+                    onChange={e => handleChange(_id, 'unit', e.target.value)}
                   />
                 </td>
                 <td className="p-2">
                   <input
+                    type="number"
                     className="w-full border px-2 py-1"
-                    defaultValue={item.rate}
-                    onChange={e => handleChange(item._id, 'rate', parseFloat(e.target.value))}
+                    value={values.rate ?? rate}
+                    onChange={e => handleChange(_id, 'rate', parseFloat(e.target.value))}
                   />
                 </td>
                 <td className="p-2">
                   <button
-                    onClick={() => handleSave(item._id)}
+                    onClick={() => handleSave(_id)}
                     className="px-3 py-1 bg-brand-accent text-white rounded"
                   >
                     Save
@@ -65,7 +75,7 @@ export default function PriceList() {
                 </td>
               </tr>
             );
-          });
+          })}
         </tbody>
       </table>
     </div>
