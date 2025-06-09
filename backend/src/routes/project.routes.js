@@ -6,6 +6,7 @@ import multer from 'multer';
 import fs from 'fs';
 import {
   getProjectFolder,
+  createProjectFolder,
   addAddendum,
   addBoqFile,
   savePricingResult,
@@ -40,6 +41,8 @@ router.post('/', async (req, res) => {
   if (process.env.CONNECTION_STRING) {
     try {
       const doc = await Project.create({ id, client, type, due });
+      // ensure folder exists for document and pricing uploads
+      createProjectFolder(id, client, type, due);
       return res.status(201).json(doc);
     } catch (err) {
       return res.status(400).json({ message: err.message });
@@ -51,6 +54,8 @@ router.post('/', async (req, res) => {
   }
   const project = { id, client, type, due, status: 'NEW' };
   sampleProjects.push(project);
+  // create folder for the new project in mock mode
+  createProjectFolder(id, client, type, due);
   res.status(201).json(project);
 });
 
