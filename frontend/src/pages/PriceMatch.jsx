@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -9,11 +10,21 @@ export default function PriceMatch() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [workbook, setWorkbook] = useState(null);
   const timerRef = useRef(null);
+  const { getRootProps, getInputProps, open, isDragActive } = useDropzone({
+    onDrop: (accepted) => {
+      if (accepted && accepted[0]) handleFile(accepted[0]);
+    },
+    multiple: false,
+    noClick: true,
+    noKeyboard: true,
+  });
 
-  async function handleFile(e) {
-    const file = e.target.files[0];
+  async function handleFile(file) {
     if (!file) return;
+    const arrayBuffer = await file.arrayBuffer();
+    setWorkbook(XLSX.read(arrayBuffer));
     const fd = new FormData();
     fd.append('file', file);
     setLoading(true);
@@ -118,9 +129,14 @@ export default function PriceMatch() {
 
   function exportExcel() {
     const data = buildData();
-    const ws = XLSX.utils.json_to_sheet(data);
+    const resultSheet = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Results');
+    if (workbook) {
+      for (const name of workbook.SheetNames) {
+        XLSX.utils.book_append_sheet(wb, workbook.Sheets[name], name);
+      }
+    }
+    XLSX.utils.book_append_sheet(wb, resultSheet, 'Results');
     XLSX.writeFile(wb, 'price_match.xlsx');
   }
 
@@ -138,12 +154,14 @@ export default function PriceMatch() {
   return (
     <div className="space-y-4 p-4">
       <h1 className="text-2xl font-semibold text-brand-dark mb-2">Price Match</h1>
-      <input
-        type="file"
-        accept=".xls,.xlsx"
-        onChange={handleFile}
-        className="border p-1 rounded"
-      />
+      <div
+        {...getRootProps()}
+        className={`border-2 border-dashed rounded p-6 text-center cursor-pointer ${isDragActive ? 'bg-brand-light' : ''}`}
+      >
+        <input {...getInputProps()} accept=".xls,.xlsx" />
+        <p className="text-sm text-gray-600 mb-2">Drag & drop an Excel file here, or click to browse</p>
+        <button type="button" onClick={open} className="px-4 py-2 bg-brand-accent text-white rounded">Browse file</button>
+      </div>
       {loading && (
         <div className="w-full bg-gray-200 h-2 rounded overflow-hidden mb-1">
           <div
@@ -156,9 +174,9 @@ export default function PriceMatch() {
       {error && <p className="text-red-600 text-sm">{error}</p>}
       {rows.length > 0 && (
         <>
-        <div className="overflow-x-auto border rounded text-xs">
+        <div className="overflow-x-auto border rounded text-xs shadow bg-white">
           <table className="min-w-full">
-            <thead className="bg-gray-50">
+            <thead className="bg-brand-dark text-white text-left sticky top-0">
               <tr>
                 <th className="px-2 py-1 border-r text-left">Description</th>
                 <th className="px-2 py-1 border-r text-left">Match</th>
@@ -174,7 +192,7 @@ export default function PriceMatch() {
               {rows.map((r, i) => {
                 const m = r.matches[r.selected] || {};
                 return (
-                  <tr key={i} className="hover:bg-gray-50">
+                  <tr key={i} className="hover:bg-gray-50 even:bg-gray-50">
                     <td className="px-2 py-1 border-t border-r">
                       <textarea
                         readOnly
@@ -245,7 +263,7 @@ export default function PriceMatch() {
                     <td className="px-2 py-1 border-t">
                       <button
                         onClick={() => deleteRow(i)}
-                        className="text-red-600">
+                        className="px-2 py-1 bg-red-50 text-red-600 rounded hover:bg-red-100">
                         ×
                       </button>
                     </td>
@@ -267,8 +285,8 @@ export default function PriceMatch() {
           </table>
         </div>
         <div className="flex gap-2 text-xs mt-2">
-          <button onClick={exportExcel} className="px-3 py-1 bg-brand-dark text-white rounded">Excel</button>
-          <button onClick={exportPdf} className="px-3 py-1 bg-brand-dark text-white rounded">PDF</button>
+          <button onClick={exportExcel} className="px-4 py-2 bg-brand-dark text-white rounded hover:bg-brand-accent">Excel</button>
+          <button onClick={exportPdf} className="px-4 py-2 bg-brand-dark text-white rounded hover:bg-brand-accent">PDF</button>
         </div>
         </>
       )}
