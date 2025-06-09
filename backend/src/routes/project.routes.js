@@ -196,6 +196,25 @@ router.post('/:id/price', async (req, res) => {
   }
 });
 
+// Save price match results to a project
+router.post('/:id/match', async (req, res) => {
+  const { id } = req.params;
+  const folder = getProjectFolder(id);
+  if (!folder) return res.status(404).json({ message: 'Project folder not found' });
+
+  const { items, total } = req.body || {};
+  if (!Array.isArray(items)) {
+    return res.status(400).json({ message: 'Items array required' });
+  }
+
+  try {
+    savePricingResult(folder, { items, total: total || 0 });
+    res.status(201).json({ message: 'Match saved' });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
 // Get pricing history for a project
 router.get('/:id/pricing', (req, res) => {
   const { id } = req.params;

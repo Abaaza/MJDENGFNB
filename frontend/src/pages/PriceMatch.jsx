@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react';
+import toast from 'react-hot-toast';
 import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
 const API_URL = import.meta.env.VITE_API_URL || 'https://2gng2p5vnc.execute-api.me-south-1.amazonaws.com';
@@ -10,6 +11,8 @@ export default function PriceMatch() {
   const [progress, setProgress] = useState(0);
   const [workbook, setWorkbook] = useState(null);
   const [editing, setEditing] = useState({});
+  const [showSave, setShowSave] = useState(false);
+  const [project, setProject] = useState({ id: '', client: '', type: '', due: '' });
   const timerRef = useRef(null);
   const { getRootProps, getInputProps, open, isDragActive } = useDropzone({
     onDrop: (accepted) => {
@@ -163,14 +166,14 @@ export default function PriceMatch() {
 
   function buildData() {
     return rows.map((r) => ({
-      Description: r.inputDescription,
-      Code: r.code,
-      Match: r.matchDesc,
-      Unit: r.unit,
-      Qty: r.qty,
-      Rate: r.rate,
-      Confidence: r.confidence,
-      Total: rowTotal(r).toFixed(2),
+      description: r.inputDescription,
+      code: r.code,
+      match: r.matchDesc,
+      unit: r.unit,
+      qty: r.qty,
+      rate: r.rate,
+      confidence: r.confidence,
+      total: rowTotal(r).toFixed(2),
     }));
   }
 
@@ -196,6 +199,34 @@ export default function PriceMatch() {
     const newWs = XLSX.utils.aoa_to_sheet(ws);
     XLSX.utils.book_append_sheet(wb, newWs, name);
     XLSX.writeFile(wb, 'price_match.xlsx');
+  }
+
+  function handleProjectChange(e) {
+    setProject({ ...project, [e.target.name]: e.target.value });
+  }
+
+  async function saveToProject(e) {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${API_URL}/api/projects`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(project),
+      });
+      if (!res.ok) throw new Error('Failed to create project');
+
+      const items = buildData();
+      const saveRes = await fetch(`${API_URL}/api/projects/${project.id}/match`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items, total: grandTotal }),
+      });
+      if (!saveRes.ok) throw new Error('Failed to save match');
+      toast.success('Saved to project');
+      setShowSave(false);
+    } catch (err) {
+      toast.error(err.message);
+    }
   }
 
   const grandTotal = rows.reduce((sum, r) => sum + rowTotal(r), 0);
@@ -352,7 +383,29 @@ export default function PriceMatch() {
         </div>
         <div className="flex gap-2 text-xs mt-2">
           <button onClick={exportExcel} className="px-4 py-2 bg-brand-dark text-white rounded hover:bg-brand-accent">Excel</button>
+          <button onClick={() => setShowSave(!showSave)} className="px-4 py-2 bg-brand-accent text-white rounded hover:opacity-90">Save to Project</button>
         </div>
+        {showSave && (
+          <form onSubmit={saveToProject} className="mt-3 space-y-2 text-xs border p-3 rounded bg-gray-50 max-w-md">
+            <div>
+              <label className="block mb-1" htmlFor="proj-id">Code</label>
+              <input id="proj-id" name="id" value={project.id} onChange={handleProjectChange} className="w-full border rounded px-2 py-1" required />
+            </div>
+            <div>
+              <label className="block mb-1" htmlFor="proj-client">Client</label>
+              <input id="proj-client" name="client" value={project.client} onChange={handleProjectChange} className="w-full border rounded px-2 py-1" required />
+            </div>
+            <div>
+              <label className="block mb-1" htmlFor="proj-type">Type</label>
+              <input id="proj-type" name="type" value={project.type} onChange={handleProjectChange} className="w-full border rounded px-2 py-1" required />
+            </div>
+            <div>
+              <label className="block mb-1" htmlFor="proj-due">Due</label>
+              <input id="proj-due" name="due" type="date" value={project.due} onChange={handleProjectChange} className="w-full border rounded px-2 py-1" required />
+            </div>
+            <button type="submit" className="px-3 py-1 bg-brand-dark text-white rounded">Save</button>
+          </form>
+        )}
         </>
       )}
     </div>
