@@ -82,6 +82,7 @@ export async function openAiMatchFromFiles(priceFile, inputBuffer, apiKey) {
       engine: 'openai',
       matches: [
         {
+          engine: 'openai',
           code: best.code,
           description: `${best.description} (openai)`,
           unit: best.unit,

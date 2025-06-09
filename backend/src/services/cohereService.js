@@ -83,6 +83,7 @@ export async function cohereMatchFromFiles(priceFile, inputBuffer, apiKey) {
       engine: 'cohere',
       matches: [
         {
+          engine: 'cohere',
           code: best.code,
           description: `${best.description} (cohere)`,
           unit: best.unit,

@@ -26,10 +26,33 @@ router.post('/', upload.single('file'), async (req, res) => {
   console.log('Cohere key provided:', !!cohereKey);
   try {
     let results;
-    if (openaiKey) {
+    if (openaiKey && cohereKey) {
+      const openaiResults = await openAiMatchFromFiles(
+        PRICE_FILE,
+        req.file.buffer,
+        openaiKey
+      );
+      const cohereResults = await cohereMatchFromFiles(
+        PRICE_FILE,
+        req.file.buffer,
+        cohereKey
+      );
+      results = openaiResults.map((o, idx) => {
+        const c = cohereResults[idx] || { matches: [] };
+        return {
+          inputDescription: o.inputDescription,
+          quantity: o.quantity,
+          matches: [...o.matches, ...(c.matches || [])]
+        };
+      });
+    } else if (openaiKey) {
       results = await openAiMatchFromFiles(PRICE_FILE, req.file.buffer, openaiKey);
     } else if (cohereKey) {
-      results = await cohereMatchFromFiles(PRICE_FILE, req.file.buffer, cohereKey);
+      results = await cohereMatchFromFiles(
+        PRICE_FILE,
+        req.file.buffer,
+        cohereKey
+      );
     } else {
       return res.status(400).json({ message: 'No API key provided' });
     }
