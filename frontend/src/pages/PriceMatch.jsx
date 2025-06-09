@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
@@ -11,7 +11,7 @@ export default function PriceMatch() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [workbook, setWorkbook] = useState(null);
-  const [apiKey, setApiKey] = useState('');
+  const [apiKey, setApiKey] = useState(() => localStorage.getItem('openaiKey') || '');
   const timerRef = useRef(null);
   const { getRootProps, getInputProps, open, isDragActive } = useDropzone({
     onDrop: (accepted) => {
@@ -21,6 +21,10 @@ export default function PriceMatch() {
     noClick: true,
     noKeyboard: true,
   });
+
+  useEffect(() => {
+    localStorage.setItem('openaiKey', apiKey);
+  }, [apiKey]);
 
   async function handleFile(file) {
     if (!file) return;
