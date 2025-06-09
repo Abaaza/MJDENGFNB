@@ -23,7 +23,7 @@ function normalize(vecs) {
   });
 }
 
-async function fetchEmbeddings(apiKey, texts) {
+async function fetchEmbeddings(apiKey, texts, inputType) {
   const headers = {
     Authorization: `Bearer ${apiKey}`,
     'Content-Type': 'application/json'
@@ -35,7 +35,11 @@ async function fetchEmbeddings(apiKey, texts) {
     const res = await fetch(API_URL, {
       method: 'POST',
       headers,
-      body: JSON.stringify({ texts: batch, model: EMBEDDING_MODEL })
+      body: JSON.stringify({
+        texts: batch,
+        model: EMBEDDING_MODEL,
+        input_type: inputType
+      })
     });
     if (!res.ok) {
       const msg = await res.text();
@@ -58,9 +62,17 @@ export async function cohereMatchFromFiles(priceFile, inputBuffer, apiKey) {
   const inputTexts = inputItems.map(i => i.descClean);
 
   console.log('Fetching embeddings for price list');
-  const priceEmbeds = await fetchEmbeddings(apiKey, priceTexts);
+  const priceEmbeds = await fetchEmbeddings(
+    apiKey,
+    priceTexts,
+    'search_document'
+  );
   console.log('Fetching embeddings for input items');
-  const inputEmbeds = await fetchEmbeddings(apiKey, inputTexts);
+  const inputEmbeds = await fetchEmbeddings(
+    apiKey,
+    inputTexts,
+    'search_query'
+  );
 
   const normPrice = normalize(priceEmbeds);
   const normInput = normalize(inputEmbeds);
