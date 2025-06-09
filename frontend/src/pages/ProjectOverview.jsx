@@ -1,14 +1,14 @@
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { sampleProjects } from '../data/sampleProjects';
 import StatusBadge from '../components/StatusBadge';
 import format from 'date-fns/format';
+import { useProject } from '../hooks/useProject';
 
 export default function ProjectOverview() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { data: project, isLoading } = useProject(id);
 
-  // ⚠️ replace with real fetch when API is ready
-  const project = sampleProjects.find((p) => p.id === id);
+  if (isLoading) return <p className="text-gray-500">Loading…</p>;
 
   if (!project)
     return (
