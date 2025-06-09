@@ -3,6 +3,7 @@ import multer from 'multer';
 import path from 'path';
 import { matchFromFiles } from '../services/matchService.js';
 import { openAiMatchFromFiles } from '../services/openAiService.js';
+import { cohereMatchFromFiles } from '../services/cohereService.js';
 import { fileURLToPath } from 'url';
 
 
@@ -21,12 +22,18 @@ router.post('/', upload.single('file'), async (req, res) => {
     name: req.file.originalname,
     size: req.file.size
   });
-  const apiKey = req.body.apiKey;
-  console.log('OpenAI key provided:', !!apiKey);
+  const { openaiKey, cohereKey } = req.body;
+  console.log('OpenAI key provided:', !!openaiKey);
+  console.log('Cohere key provided:', !!cohereKey);
   try {
-    const results = apiKey
-      ? await openAiMatchFromFiles(PRICE_FILE, req.file.buffer, apiKey)
-      : matchFromFiles(PRICE_FILE, req.file.buffer);
+    let results;
+    if (openaiKey) {
+      results = await openAiMatchFromFiles(PRICE_FILE, req.file.buffer, openaiKey);
+    } else if (cohereKey) {
+      results = await cohereMatchFromFiles(PRICE_FILE, req.file.buffer, cohereKey);
+    } else {
+      results = matchFromFiles(PRICE_FILE, req.file.buffer);
+    }
     console.log('Price match results:', results.length);
     res.json(results);
   } catch (err) {

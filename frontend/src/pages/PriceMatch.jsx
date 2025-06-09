@@ -24,16 +24,20 @@ export default function PriceMatch() {
 
   async function handleFile(file) {
     if (!file) return;
-    const apiKey = localStorage.getItem('openaiKey') || '';
+    const openaiKey = localStorage.getItem('openaiKey') || '';
+    const cohereKey = localStorage.getItem('cohereKey') || '';
     const arrayBuffer = await file.arrayBuffer();
     setWorkbook(XLSX.read(arrayBuffer));
     const fd = new FormData();
     fd.append('file', file);
-    if (apiKey) {
-      fd.append('apiKey', apiKey);
+    if (openaiKey) {
+      fd.append('openaiKey', openaiKey);
+    } else if (cohereKey) {
+      fd.append('cohereKey', cohereKey);
     }
     console.log('Uploading file', file.name, file.size);
-    console.log('Using API key:', apiKey ? 'yes' : 'no');
+    console.log('Using OpenAI key:', openaiKey ? 'yes' : 'no');
+    console.log('Using Cohere key:', cohereKey ? 'yes' : 'no');
     setLoading(true);
     setProgress(0);
     timerRef.current = setInterval(() => {
