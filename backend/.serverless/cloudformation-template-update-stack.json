@@ -162,7 +162,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/mjd-backend/prod/1749393648501-2025-06-08T14:40:48.501Z/api.zip"
+          "S3Key": "serverless/mjd-backend/prod/1749410234879-2025-06-08T19:17:14.879Z/api.zip"
         },
         "Handler": "src/handler.handler",
         "Runtime": "nodejs20.x",
@@ -192,44 +192,21 @@
         "ApiLogGroup"
       ]
     },
-    "ApiLambdaVersion89MR4EnKk96bufuqk0FxQ1hIkocalQZ9IPit1sbIGs": {
+    "ApiLambdaVersionYmflq9H8Tzv4PI1FiML3jl9NaxEd2uiTSNJ4sb9no": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "ApiLambdaFunction"
         },
-        "CodeSha256": "aBCZqINJUAJL0zfy8wWRU9jCi3/f2nQTrksuQWdtahU="
+        "CodeSha256": "a4l2gRxeWeMQ1zB4003vSwW8gEislxxRHXJJmLvxA7I="
       }
     },
     "HttpApi": {
       "Type": "AWS::ApiGatewayV2::Api",
       "Properties": {
         "Name": "prod-mjd-backend",
-        "ProtocolType": "HTTP",
-        "CorsConfiguration": {
-          "AllowHeaders": [
-            "Content-Type",
-            "X-Amz-Date",
-            "Authorization",
-            "X-Api-Key",
-            "X-Amz-Security-Token",
-            "X-Amz-User-Agent",
-            "X-Amzn-Trace-Id"
-          ],
-          "AllowMethods": [
-            "OPTIONS",
-            "GET",
-            "POST",
-            "PUT",
-            "PATCH",
-            "HEAD",
-            "DELETE"
-          ],
-          "AllowOrigins": [
-            "*"
-          ]
-        }
+        "ProtocolType": "HTTP"
       }
     },
     "HttpApiStage": {
@@ -333,7 +310,7 @@
     "ApiLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "ApiLambdaVersion89MR4EnKk96bufuqk0FxQ1hIkocalQZ9IPit1sbIGs"
+        "Ref": "ApiLambdaVersionYmflq9H8Tzv4PI1FiML3jl9NaxEd2uiTSNJ4sb9no"
       },
       "Export": {
         "Name": "sls-mjd-backend-prod-ApiLambdaFunctionQualifiedArn"

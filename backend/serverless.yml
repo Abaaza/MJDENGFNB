@@ -1,11 +1,11 @@
-service: mjd-backend
+service: mjd-backend # no $ in the name
 frameworkVersion: "3"
 
 provider:
   name: aws
   runtime: nodejs20.x
   region: me-south-1
-  stage: ${opt:stage, '$default'}  # Deploy to the default stage without a path prefix
+  stage: ${opt:stage, 'prod'} # <-- legal default
   environment:
     CONNECTION_STRING: ${env:CONNECTION_STRING, ''}
     JWT_SECRET: ${env:JWT_SECRET, ''}
@@ -16,9 +16,10 @@ provider:
     STAGE: ${self:provider.stage}
     NODE_OPTIONS: "--enable-source-maps"
 
-  httpApi:
-    cors: true
-    payload: '2.0'
+# HTTP-API config (top-level; leave out "stage")
+httpApi:
+  cors: true # wildcard CORS is fine while debugging
+  payload: "2.0"
 
 functions:
   api:
@@ -35,13 +36,5 @@ package:
   individually: true
   patterns:
     - "src/**"
-    - "server.js"
-    - "package.json"
-    - "package-lock.json"
-    - "node_modules/**"
     - "backend/MJD-PRICELIST.xlsx"
-    - "!node_modules/.cache/**"
     - "!tests/**"
-    - "!*.md"
-    - "!*.log"
-    - "!scripts/**"
