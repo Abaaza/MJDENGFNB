@@ -26,7 +26,20 @@ export default function PriceList() {
 
   function handleSave(id) {
     if (editing[id]) {
-      update.mutate({ id, updates: editing[id] });
+      const upd = { ...editing[id] };
+      if (typeof upd.keywords === 'string') {
+        upd.keywords = upd.keywords
+          .split(',')
+          .map(s => s.trim())
+          .filter(Boolean);
+      }
+      if (typeof upd.phrases === 'string') {
+        upd.phrases = upd.phrases
+          .split(',')
+          .map(s => s.trim())
+          .filter(Boolean);
+      }
+      update.mutate({ id, updates: upd });
     }
   }
 
@@ -46,14 +59,27 @@ export default function PriceList() {
         <thead>
           <tr className="bg-gray-100">
             <th className="p-2 text-left">Description</th>
+            <th className="p-2 text-left">Category</th>
+            <th className="p-2 text-left">Sub Category</th>
             <th className="p-2 text-left">Unit</th>
             <th className="p-2 text-left">Rate</th>
+            <th className="p-2 text-left">Keywords</th>
+            <th className="p-2 text-left">Phrases</th>
             <th className="p-2 text-left">Actions</th>
           </tr>
         </thead>
         <tbody>
           {data.map(item => {
-            const { _id, description, unit, rate } = item;
+            const {
+              _id,
+              description,
+              category,
+              subCategory,
+              unit,
+              rate,
+              keywords = [],
+              phrases = [],
+            } = item;
             const values = editing[_id] || {};
             return (
               <tr key={_id} className="border-b">
@@ -62,6 +88,20 @@ export default function PriceList() {
                     className="w-full border px-2 py-1"
                     value={values.description ?? description}
                     onChange={e => handleChange(_id, 'description', e.target.value)}
+                  />
+                </td>
+                <td className="p-2">
+                  <input
+                    className="w-full border px-2 py-1"
+                    value={values.category ?? category}
+                    onChange={e => handleChange(_id, 'category', e.target.value)}
+                  />
+                </td>
+                <td className="p-2">
+                  <input
+                    className="w-full border px-2 py-1"
+                    value={values.subCategory ?? subCategory}
+                    onChange={e => handleChange(_id, 'subCategory', e.target.value)}
                   />
                 </td>
                 <td className="p-2">
@@ -77,6 +117,20 @@ export default function PriceList() {
                     className="w-full border px-2 py-1"
                     value={values.rate ?? rate}
                     onChange={e => handleChange(_id, 'rate', parseFloat(e.target.value))}
+                  />
+                </td>
+                <td className="p-2">
+                  <input
+                    className="w-full border px-2 py-1"
+                    value={values.keywords ?? keywords.join(', ')}
+                    onChange={e => handleChange(_id, 'keywords', e.target.value)}
+                  />
+                </td>
+                <td className="p-2">
+                  <input
+                    className="w-full border px-2 py-1"
+                    value={values.phrases ?? phrases.join(', ')}
+                    onChange={e => handleChange(_id, 'phrases', e.target.value)}
                   />
                 </td>
                 <td className="p-2">

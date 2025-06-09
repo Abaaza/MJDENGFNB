@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
   res.json(items);
 });
 
-// Search by code or description
+// Search by code, description or other fields
 router.get('/search', async (req, res) => {
   const q = String(req.query.q || '').trim();
   if (!q) return res.json([]);
@@ -18,7 +18,11 @@ router.get('/search', async (req, res) => {
     $or: [
       { description: regex },
       { code: regex },
-      { ref: regex }
+      { ref: regex },
+      { category: regex },
+      { subCategory: regex },
+      { keywords: regex },
+      { phrases: regex },
     ]
   })
     .sort({ description: 1 })
