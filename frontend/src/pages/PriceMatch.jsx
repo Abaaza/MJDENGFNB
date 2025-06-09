@@ -94,17 +94,20 @@ export default function PriceMatch() {
     setRows((rows) =>
       rows.map((r, j) => {
         if (j !== i) return r;
-        const m = r.matches[idx] || {};
-        return {
-          ...r,
-          selected: idx,
-          engine: m.engine || r.engine,
-          code: m.code || '',
-          matchDesc: m.description || '',
-          unit: m.unit || '',
-          rate: m.unitRate ?? '',
-          confidence: m.confidence ?? '',
-        };
+        if (idx < r.matches.length) {
+          const m = r.matches[idx] || {};
+          return {
+            ...r,
+            selected: idx,
+            engine: m.engine || r.engine,
+            code: m.code || '',
+            matchDesc: m.description || '',
+            unit: m.unit || '',
+            rate: m.unitRate ?? '',
+            confidence: m.confidence ?? '',
+          };
+        }
+        return { ...r, selected: idx };
       })
     );
   }
@@ -135,33 +138,41 @@ export default function PriceMatch() {
     setEditing((e) => ({ ...e, [i]: !e[i] }));
   }
 
-  async function searchPricelist(i) {
-    const desc = rows[i]?.inputDescription || '';
+  const [searchTerms, setSearchTerms] = useState({});
+  const [searchResults, setSearchResults] = useState({});
+
+  async function updateSearch(i, val) {
+    setSearchTerms((s) => ({ ...s, [i]: val }));
+    if (!val.trim()) {
+      setSearchResults((r) => ({ ...r, [i]: [] }));
+      return;
+    }
     try {
-      const res = await fetch(`${API_URL}/api/prices/search?q=${encodeURIComponent(desc)}`);
+      const res = await fetch(`${API_URL}/api/prices/search?q=${encodeURIComponent(val)}`);
       if (!res.ok) throw new Error('Search failed');
       const data = await res.json();
-      setRows((rows) =>
-        rows.map((r, j) => {
-          if (j !== i) return r;
-          const searchMatches = data.map((d) => ({
-            engine: 'search',
-            code: d.code,
-            description: d.description,
-            unit: d.unit,
-            unitRate: d.rate,
-            confidence: ''
-          }));
-          const base = r.matches.filter((m) => m.engine !== 'search');
-          return {
-            ...r,
-            matches: [...base, ...searchMatches]
-          };
-        })
-      );
+      setSearchResults((r) => ({ ...r, [i]: data }));
     } catch (err) {
       console.error('Search error', err);
     }
+  }
+
+  function selectSearchResult(i, item) {
+    setRows((rows) =>
+      rows.map((r, j) => {
+        if (j !== i) return r;
+        return {
+          ...r,
+          selected: r.matches.length, // index of search option
+          engine: 'search',
+          code: item.code,
+          matchDesc: item.description,
+          unit: item.unit,
+          rate: item.rate,
+          confidence: ''
+        };
+      })
+    );
   }
 
   function buildData() {
@@ -201,23 +212,32 @@ export default function PriceMatch() {
   async function saveToProject(e) {
     e.preventDefault();
     try {
+      console.log('Creating project', project);
       const res = await fetch(`${API_URL}/api/projects`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(project),
       });
-      if (!res.ok) throw new Error('Failed to create project');
+      console.log('Create project status', res.status);
+      const createText = await res.text();
+      console.log('Create project response', createText);
+      if (!res.ok) throw new Error(createText || 'Failed to create project');
 
       const items = buildData();
+      console.log('Saving match with', items.length, 'items');
       const saveRes = await fetch(`${API_URL}/api/projects/${project.id}/match`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ items, total: grandTotal }),
       });
-      if (!saveRes.ok) throw new Error('Failed to save match');
+      console.log('Save match status', saveRes.status);
+      const saveText = await saveRes.text();
+      console.log('Save match response', saveText);
+      if (!saveRes.ok) throw new Error(saveText || 'Failed to save match');
       toast.success('Saved to project');
       setShowSave(false);
     } catch (err) {
+      console.error('Save to project error', err);
       toast.error(err.message);
     }
   }
@@ -287,6 +307,39 @@ export default function PriceMatch() {
                             <span>{m.code} - {m.description}</span>
                           </label>
                         ))}
+                        <label className="flex items-center gap-1">
+                          <input
+                            type="radio"
+                            name={`match-${i}`}
+                            checked={r.selected === r.matches.length}
+                            onChange={() => updateSelection(i, r.matches.length)}
+                            className="text-brand-accent"
+                          />
+                          <span>Search price list...</span>
+                        </label>
+                        {r.selected === r.matches.length && (
+                          <div className="mt-1">
+                            <input
+                              type="text"
+                              value={searchTerms[i] || ''}
+                              onChange={(e) => updateSearch(i, e.target.value)}
+                              className="w-40 border rounded px-1 text-xs"
+                            />
+                            {(searchResults[i] || []).length > 0 && (
+                              <ul className="border rounded bg-white max-h-40 overflow-auto text-xs mt-1">
+                                {searchResults[i].map((item) => (
+                                  <li
+                                    key={item._id}
+                                    className="px-2 py-1 hover:bg-gray-100 cursor-pointer"
+                                    onClick={() => selectSearchResult(i, item)}
+                                  >
+                                    {item.code} - {item.description}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        )}
                       </div>
                       {editing[i] ? (
                         <>
@@ -308,7 +361,6 @@ export default function PriceMatch() {
                           <button onClick={() => toggleEdit(i)} className="text-blue-600">✎</button>
                         </div>
                       )}
-                      <button onClick={() => searchPricelist(i)} className="ml-1 text-xs text-brand-accent underline">Search</button>
                     </td>
                     <td className="px-2 py-1 border-t border-r">{r.unit}</td>
                     <td className="px-2 py-1 border-t border-r">

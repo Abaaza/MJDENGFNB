@@ -39,10 +39,12 @@ router.post('/', upload.single('file'), async (req, res) => {
       );
       results = openaiResults.map((o, idx) => {
         const c = cohereResults[idx] || { matches: [] };
+        const openaiBest = o.matches[0];
+        const cohereBest = (c.matches || [])[0];
         return {
           inputDescription: o.inputDescription,
           quantity: o.quantity,
-          matches: [...o.matches, ...(c.matches || [])]
+          matches: [openaiBest, cohereBest].filter(Boolean)
         };
       });
     } else if (openaiKey) {
