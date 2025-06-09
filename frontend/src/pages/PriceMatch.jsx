@@ -11,6 +11,7 @@ export default function PriceMatch() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [workbook, setWorkbook] = useState(null);
+  const [apiKey, setApiKey] = useState('');
   const timerRef = useRef(null);
   const { getRootProps, getInputProps, open, isDragActive } = useDropzone({
     onDrop: (accepted) => {
@@ -27,6 +28,11 @@ export default function PriceMatch() {
     setWorkbook(XLSX.read(arrayBuffer));
     const fd = new FormData();
     fd.append('file', file);
+    if (apiKey) {
+      fd.append('apiKey', apiKey);
+    }
+    console.log('Uploading file', file.name, file.size);
+    console.log('Using API key:', apiKey ? 'yes' : 'no');
     setLoading(true);
     setProgress(0);
     timerRef.current = setInterval(() => {
@@ -39,6 +45,7 @@ export default function PriceMatch() {
       });
       if (!res.ok) throw new Error('Match failed');
       const data = await res.json();
+      console.log('Received results:', data.length);
       const formatted = data.map((r) => {
         const matches = (r.matches || []).filter(
           (m) =>
@@ -154,6 +161,15 @@ export default function PriceMatch() {
   return (
     <div className="space-y-4 p-4">
       <h1 className="text-2xl font-semibold text-brand-dark mb-2">Price Match</h1>
+      <div className="mb-4">
+        <label className="block text-sm font-medium">OpenAI API Key</label>
+        <input
+          type="text"
+          value={apiKey}
+          onChange={(e) => setApiKey(e.target.value)}
+          className="w-full border rounded px-2 py-1"
+        />
+      </div>
       <div
         {...getRootProps()}
         className={`border-2 border-dashed rounded p-6 text-center cursor-pointer ${isDragActive ? 'bg-brand-light' : ''}`}
