@@ -16,9 +16,11 @@ const PRICE_FILE = path.resolve(__dirname, '../../MJD-PRICELIST.xlsx');
 
 router.post('/', upload.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
+  const apiKey = req.body.apiKey || '';
   console.log('Price match upload:', {
     name: req.file.originalname,
-    size: req.file.size
+    size: req.file.size,
+    apiKeyProvided: Boolean(apiKey)
   });
   try {
     const results = matchFromFiles(PRICE_FILE, req.file.buffer);

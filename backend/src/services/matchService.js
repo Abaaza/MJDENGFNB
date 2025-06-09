@@ -246,7 +246,7 @@ export function parseInputBuffer(buffer) {
   return parseRows(rows, hdr.index);
 }
 
-export function matchItems(inputItems, priceItems, limit = 4) {
+export function matchItems(inputItems, priceItems, limit = 2) {
   function pickDiverse(sorted) {
     const out = [];
     for (const cand of sorted) {
@@ -296,5 +296,5 @@ export function matchFromFiles(priceFilePath, inputBuffer) {
   console.log('Price list items loaded:', priceItems.length);
   const inputItems = parseInputBuffer(inputBuffer);
   console.log('Input items parsed:', inputItems.length);
-  return matchItems(inputItems, priceItems, 4);
+  return matchItems(inputItems, priceItems, 2);
 }

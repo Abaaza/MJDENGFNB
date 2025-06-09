@@ -9,6 +9,7 @@ export default function PriceMatch() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [apiKey, setApiKey] = useState('');
   const timerRef = useRef(null);
 
   async function handleFile(e) {
@@ -16,6 +17,9 @@ export default function PriceMatch() {
     if (!file) return;
     const fd = new FormData();
     fd.append('file', file);
+    if (apiKey) {
+      fd.append('apiKey', apiKey);
+    }
     setLoading(true);
     setProgress(0);
     timerRef.current = setInterval(() => {
@@ -138,6 +142,13 @@ export default function PriceMatch() {
   return (
     <div className="space-y-4 p-4">
       <h1 className="text-2xl font-semibold text-brand-dark mb-2">Price Match</h1>
+      <input
+        type="text"
+        placeholder="OpenAI API Key"
+        value={apiKey}
+        onChange={(e) => setApiKey(e.target.value)}
+        className="border p-1 rounded block"
+      />
       <input
         type="file"
         accept=".xls,.xlsx"
