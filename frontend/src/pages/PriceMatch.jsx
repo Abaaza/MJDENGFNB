@@ -65,6 +65,7 @@ export default function PriceMatch() {
           matches,
           selected: 0,
           qty: r.quantity || 0,
+          engine: r.engine || first.engine || '',
           code: first.code || '',
           matchDesc: first.description || '',
           unit: first.unit || '',
@@ -134,6 +135,7 @@ export default function PriceMatch() {
       Unit: r.unit,
       Qty: r.qty,
       Rate: r.rate,
+      Engine: r.engine,
       Confidence: r.confidence,
       Total: rowTotal(r).toFixed(2),
     }));
@@ -196,6 +198,7 @@ export default function PriceMatch() {
                 <th className="px-2 py-1 border-r text-left">Qty</th>
                 <th className="px-2 py-1 border-r text-left">Rate</th>
                 <th className="px-2 py-1 border-r text-left">Total</th>
+                <th className="px-2 py-1 border-r text-left">Engine</th>
                 <th className="px-2 py-1 border-r text-left">Conf.</th>
                 <th className="px-2 py-1 text-left">Del</th>
               </tr>
@@ -264,6 +267,7 @@ export default function PriceMatch() {
                       />
                     </td>
                     <td className="px-2 py-1 border-t border-r">{rowTotal(r).toFixed(2)}</td>
+                    <td className="px-2 py-1 border-t border-r">{r.engine}</td>
                     <td className="px-2 py-1 border-t border-r">
                       <input
                         type="number"
@@ -285,7 +289,7 @@ export default function PriceMatch() {
             </tbody>
             <tfoot>
               <tr>
-                <td colSpan="6" className="px-2 py-1 text-right font-semibold border-t">
+                <td colSpan="7" className="px-2 py-1 text-right font-semibold border-t">
                   Total
                 </td>
                 <td className="px-2 py-1 border-t border-r font-semibold">
