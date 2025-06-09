@@ -16,7 +16,8 @@ const app = express();
 
 // ✅ Middlewares (order matters)
 app.use(cors({ origin: '*', credentials: true }));
-app.use(express.json({ strict: false })); // important for Lambda to parse body properly
+// Increase body size limit for large price match payloads
+app.use(express.json({ limit: '10mb', strict: false })); // important for Lambda to parse body properly
 
 // ✅ Routes
 app.use('/api/auth', authRoutes);
