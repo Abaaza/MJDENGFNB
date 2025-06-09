@@ -2,6 +2,7 @@ import { Router } from 'express';
 import multer from 'multer';
 import path from 'path';
 import { matchFromFiles } from '../services/matchService.js';
+import { openAiMatchFromFiles } from '../services/openAiService.js';
 import { fileURLToPath } from 'url';
 
 
@@ -14,14 +15,18 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // to reach the repo root before appending the frontend path
 const PRICE_FILE = path.resolve(__dirname, '../../MJD-PRICELIST.xlsx');
 
-router.post('/', upload.single('file'), (req, res) => {
+router.post('/', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
   console.log('Price match upload:', {
     name: req.file.originalname,
     size: req.file.size
   });
+  const apiKey = req.body.apiKey;
+  console.log('OpenAI key provided:', !!apiKey);
   try {
-    const results = matchFromFiles(PRICE_FILE, req.file.buffer);
+    const results = apiKey
+      ? await openAiMatchFromFiles(PRICE_FILE, req.file.buffer, apiKey)
+      : matchFromFiles(PRICE_FILE, req.file.buffer);
     console.log('Price match results:', results.length);
     res.json(results);
   } catch (err) {
