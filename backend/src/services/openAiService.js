@@ -82,7 +82,7 @@ export async function openAiMatchFromFiles(priceFile, inputBuffer, apiKey) {
       matches: [
         {
           code: best.code,
-          description: best.description,
+          description: `${best.description} (openai)`,
           unit: best.unit,
           unitRate: best.rate,
           confidence: Math.round(bestScore * 1000) / 1000
